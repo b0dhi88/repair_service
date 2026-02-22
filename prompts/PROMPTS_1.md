@@ -177,3 +177,6 @@ web-1  | [22/Feb/2026 18:55:31] "POST /client/requests/create/ HTTP/1.1" 500 888
 
 [00:53]
 'в @requests_app/views/dispatcher.py RequestCancelView на удаленной заявке остается кнопка отмены'
+
+[01:01]
+'@requests_app/views/dispatcher.py при попытке назначить заявку на мастера она остается неназначенной (new), но у мастера она появляется в списке (новая и недоступная)'

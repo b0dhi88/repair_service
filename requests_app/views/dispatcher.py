@@ -73,6 +73,8 @@ class RequestAssignView(DispatcherRequiredMixin, UpdateView):
             )
             return self.form_invalid(form)
         
+        form.instance.refresh_from_db()
+        
         return super().form_valid(form)
 
 
@@ -117,6 +119,8 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
                 'Заявка была изменена другим пользователем. Обновите страницу.'
             )
             return self.form_invalid(form)
+        
+        form.instance.refresh_from_db()
         
         return super().form_valid(form)
 
