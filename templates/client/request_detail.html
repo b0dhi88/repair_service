@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Заявка #{{ request.pk }}</h1>
+
+<p><strong>Клиент:</strong> {{ request.client_name }}</p>
+<p><strong>Телефон:</strong> {{ request.phone }}</p>
+<p><strong>Адрес:</strong> {{ request.address }}</p>
+<p><strong>Проблема:</strong> {{ request.problem_text }}</p>
+<p><strong>Статус:</strong> {{ request.status }}</p>
+<p><strong>Создана:</strong> {{ request.created_at }}</p>
+
+{% if request.master %}
+<p><strong>Мастер:</strong> {{ request.master.username }}</p>
+{% endif %}
+
+<a href="{% url 'client:request-list' %}">Назад к списку</a>
+{% endblock %}

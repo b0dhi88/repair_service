@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Переназначить мастера</h1>
+
+<p>Заявка #{{ request.pk }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Переназначить</button>
+</form>
+{% endblock %}

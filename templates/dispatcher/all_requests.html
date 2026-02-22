@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Все заявки</h1>
+
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            Заявка #{{ request.pk }} - {{ request.client_name }} - {{ request.status }}
+            {% if request.status == 'new' %}
+                <a href="{% url 'dispatcher:request-assign' request.pk %}">Назначить мастера</a>
+            {% elif request.status == 'assigned' %}
+                <a href="{% url 'dispatcher:request-reassign' request.pk %}">Переназначить</a>
+            {% endif %}
+            <a href="{% url 'dispatcher:request-cancel' request.pk %}">Отменить</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет заявок.</p>
+{% endif %}
+
+<a href="{% url 'dispatcher:master-list' %}">Список мастеров</a>
+{% endblock %}

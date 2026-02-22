@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Отменить заявку #{{ request.pk }}?</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Да, отменить</button>
+    <a href="{% url 'client:request-detail' request.pk %}">Нет, назад</a>
+</form>
+{% endblock %}

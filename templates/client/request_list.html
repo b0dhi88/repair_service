@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои заявки</h1>
+
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            <a href="{% url 'client:request-detail' request.pk %}">Заявка #{{ request.pk }}</a>
+            - {{ request.status }} - {{ request.created_at }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Заявок пока нет.</p>
+{% endif %}
+
+<a href="{% url 'client:request-create' %}">Создать новую заявку</a>
+{% endblock %}

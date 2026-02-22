@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Список мастеров</h1>
+
+{% if masters %}
+    <ul>
+    {% for master in masters %}
+        <li>{{ master.username }} - {{ master.get_full_name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет мастеров.</p>
+{% endif %}
+{% endblock %}
