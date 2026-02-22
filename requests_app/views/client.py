@@ -42,7 +42,7 @@ class RequestCreateView(ClientRequiredMixin, CreateView):
     def form_valid(self, form):
         service = RequestService()
         try:
-            service.create_request(self.request.user, form.cleaned_data)
+            self.object = service.create_request(self.request.user, form.cleaned_data)
             messages.success(self.request, 'Заявка успешно создана')
         except RequestPermissionError as e:
             messages.error(self.request, str(e))

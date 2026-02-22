@@ -19,7 +19,8 @@ class User(AbstractUser):
     # Телефон обязателен и уникален для всех пользователей
     phone = models.CharField(
         max_length=20,
-        unique=True,  # Уникальность телефона
+        unique=True,
+        blank=True,
         verbose_name='Телефон'
     )
     
@@ -39,16 +40,6 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
-    
-    def clean(self):
-        """Валидация модели"""
-        super().clean()
-        if not self.phone:
-            raise ValidationError({'phone': 'Телефон обязателен для заполнения'})
-    
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
     
     @property
     def is_client(self):
@@ -133,31 +124,6 @@ class Request(models.Model):
     
     def __str__(self):
         return f"Заявка #{self.id} - {self.client_name} ({self.get_status_display()})"
-    
-    def clean(self):
-        """Валидация модели"""
-        errors = {}
-        
-        # Проверка обязательных полей
-        if not self.address:
-            errors['address'] = 'Адрес обязателен'
-        if not self.problem_text:
-            errors['problem_text'] = 'Описание проблемы обязательно'
-        
-        # Проверка назначения
-        if self.assigned_to and self.assigned_to.role != User.Role.MASTER:
-            errors['assigned_to'] = 'Мастер должен иметь роль "Мастер"'
-        
-        # Проверка клиента
-        if self.client and self.client.role != User.Role.CLIENT:
-            errors['client'] = 'Пользователь должен быть клиентом'
-        
-        if errors:
-            raise ValidationError(errors)
-    
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
     
     def can_take_work(self, user):
         """Проверка, может ли мастер взять заявку в работу"""
