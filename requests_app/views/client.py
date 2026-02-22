@@ -4,6 +4,9 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+import logging
+
+logger = logging.getLogger(__name__)
 
 from ..models import Request, User
 from ..services import (
@@ -25,21 +28,16 @@ class RequestListView(ClientRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Request.objects.filter(client=self.request.user).order_by('-created_at')
+        queryset = Request.objects.filter(client=self.request.user).order_by('-created_at')
+        logger.info(f"User: {self.request.user}, Requests: {list(queryset.values('id', 'status', 'created_at'))}")
+        return queryset
 
 
 class RequestCreateView(ClientRequiredMixin, CreateView):
     model = Request
     template_name = 'client/request_form.html'
-    fields = ['client_name', 'phone', 'address', 'problem_text']
+    fields = ['address', 'problem_text']
     success_url = reverse_lazy('client:request-list')
-
-    def get_initial(self):
-        initial = super().get_initial()
-        user = self.request.user
-        initial['client_name'] = user.get_full_name() or user.username
-        initial['phone'] = user.phone
-        return initial
 
     def form_valid(self, form):
         service = RequestService()

@@ -71,8 +71,6 @@ class RequestService:
         
         request = Request.objects.create(
             client=client,
-            client_name=validated_data['client_name'],
-            phone=validated_data['phone'],
             address=validated_data['address'],
             problem_text=validated_data['problem_text'],
             status=Request.Status.NEW,
@@ -414,7 +412,7 @@ class RequestService:
         validated_data = self.validator.validate_create_data(data)
         
         changes = {}
-        for field in ['client_name', 'phone', 'address', 'problem_text']:
+        for field in ['address', 'problem_text']:
             if field in validated_data:
                 old_value = getattr(request, field)
                 new_value = validated_data[field]

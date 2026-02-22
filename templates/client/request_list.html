@@ -8,7 +8,7 @@
     {% for request in requests %}
         <li>
             <a href="{% url 'client:request-detail' request.pk %}">Заявка #{{ request.pk }}</a>
-            - {{ request.status }} - {{ request.created_at }}
+            - {{ request.get_status_display }} - {{ request.created_at }}
         </li>
     {% endfor %}
     </ul>

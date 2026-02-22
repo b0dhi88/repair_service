@@ -80,15 +80,16 @@ class Request(models.Model):
         verbose_name='Клиент'
     )
     
-    # Данные клиента (могут дублироваться на момент создания)
-    client_name = models.CharField(
-        max_length=255,
-        verbose_name='Имя клиента'
-    )
-    phone = models.CharField(
-        max_length=20,
-        verbose_name='Телефон'
-    )
+    @property
+    def client_name(self):
+        """Имя клиента из профиля."""
+        return self.client.get_full_name() or self.client.username
+    
+    @property
+    def client_phone(self):
+        """Телефон клиента из профиля."""
+        return self.client.phone
+    
     address = models.TextField(
         verbose_name='Адрес'
     )
@@ -128,7 +129,6 @@ class Request(models.Model):
             models.Index(fields=['status', 'assigned_to']),
             models.Index(fields=['-created_at']),
             models.Index(fields=['client', 'status']),
-            models.Index(fields=['phone']),  # Индекс для поиска по телефону
         ]
     
     def __str__(self):
@@ -139,10 +139,6 @@ class Request(models.Model):
         errors = {}
         
         # Проверка обязательных полей
-        if not self.client_name:
-            errors['client_name'] = 'Имя клиента обязательно'
-        if not self.phone:
-            errors['phone'] = 'Телефон обязателен'
         if not self.address:
             errors['address'] = 'Адрес обязателен'
         if not self.problem_text:
@@ -160,12 +156,6 @@ class Request(models.Model):
             raise ValidationError(errors)
     
     def save(self, *args, **kwargs):
-        # Автоматически подставляем имя и телефон из профиля клиента, если не указаны
-        if not self.client_name and self.client:
-            self.client_name = self.client.get_full_name() or self.client.username
-        if not self.phone and self.client:
-            self.phone = self.client.phone
-        
         self.clean()
         super().save(*args, **kwargs)
     

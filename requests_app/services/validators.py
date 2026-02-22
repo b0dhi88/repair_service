@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class RequestValidator:
     """Валидатор данных и бизнес-правил для заявок."""
     
-    REQUIRED_CREATE_FIELDS = ['client_name', 'phone', 'address', 'problem_text']
+    REQUIRED_CREATE_FIELDS = ['address', 'problem_text']
     
     @classmethod
     def validate_create_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -42,16 +42,6 @@ class RequestValidator:
         if errors:
             raise RequestValidationError(
                 f'Ошибка валидации: {", ".join(errors.keys())}'
-            )
-        
-        phone = data.get('phone', '')
-        if phone and len(phone) < 5:
-            errors['phone'] = 'Номер телефона слишком короткий'
-        
-        if errors:
-            raise RequestValidationError(
-                'Ошибка валидации данных заявки',
-                field=list(errors.keys())[0]
             )
         
         return data

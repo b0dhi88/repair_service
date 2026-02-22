@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Creates seed data from seed_data.json'
 
     def handle(self, *args, **options):
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         json_path = os.path.join(base_dir, 'data', 'seed_data.json')
 
         if not os.path.exists(json_path):
@@ -76,34 +76,31 @@ class Command(BaseCommand):
         users = {u.username: u for u in User.objects.all()}
 
         for request_data in data.get('requests', []):
-            client_id = request_data.get('client_id')
-            if client_id:
-                client = User.objects.filter(id=client_id, role=User.Role.CLIENT).first()
+            client_username = request_data.get('client_username')
+            if client_username:
+                client = User.objects.filter(username=client_username, role=User.Role.CLIENT).first()
             else:
                 client = None
 
-            assigned_to_id = request_data.get('assigned_to_id')
-            if assigned_to_id:
-                assigned_to = User.objects.filter(id=assigned_to_id, role=User.Role.MASTER).first()
+            assigned_to_username = request_data.get('assigned_to_username')
+            if assigned_to_username:
+                assigned_to = User.objects.filter(username=assigned_to_username, role=User.Role.MASTER).first()
             else:
                 assigned_to = None
 
             if not Request.objects.filter(
                 client=client,
-                client_name=request_data['client_name'],
-                phone=request_data['phone']
+                address=request_data['address']
             ).exists():
                 Request.objects.create(
                     client=client,
-                    client_name=request_data['client_name'],
-                    phone=request_data['phone'],
                     address=request_data['address'],
                     problem_text=request_data['problem_text'],
                     status=request_data.get('status', 'new'),
                     assigned_to=assigned_to
                 )
-                self.stdout.write(f'Created request: {request_data["client_name"]} - {request_data["problem_text"][:30]}...')
+                self.stdout.write(f'Created request: {client_username} - {request_data["problem_text"][:30]}...')
             else:
-                self.stdout.write(f'Request for {request_data["client_name"]} already exists')
+                self.stdout.write(f'Request for {client_username} already exists')
 
         self.stdout.write(self.style.SUCCESS('Seed data created successfully!'))

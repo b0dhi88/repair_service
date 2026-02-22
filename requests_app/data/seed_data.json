@@ -1,7 +1,6 @@
 {
   "clients": [
     {
-      "id": 1,
       "username": "client1",
       "password": "client123",
       "email": "client1@example.com",
@@ -11,7 +10,6 @@
       "is_verified": true
     },
     {
-      "id": 2,
       "username": "client2",
       "password": "client123",
       "email": "client2@example.com",
@@ -21,7 +19,6 @@
       "is_verified": true
     },
     {
-      "id": 3,
       "username": "client3",
       "password": "client123",
       "email": "client3@example.com",
@@ -33,7 +30,6 @@
   ],
   "dispatchers": [
     {
-      "id": 1,
       "username": "dispatcher1",
       "password": "dispatcher123",
       "email": "dispatcher@example.com",
@@ -45,7 +41,6 @@
   ],
   "masters": [
     {
-      "id": 1,
       "username": "master1",
       "password": "master123",
       "email": "master1@example.com",
@@ -55,7 +50,6 @@
       "is_verified": true
     },
     {
-      "id": 2,
       "username": "master2",
       "password": "master123",
       "email": "master2@example.com",
@@ -67,39 +61,31 @@
   ],
   "requests": [
     {
-      "client_id": 1,
-      "client_name": "Иван Петров",
-      "phone": "+79001111111",
+      "client_username": "client1",
       "address": "ул. Ленина, д. 10, кв. 5",
       "problem_text": "Не работает смеситель на кухне, течет вода",
       "status": "new"
     },
     {
-      "client_id": 2,
-      "client_name": "Анна Сидорова",
-      "phone": "+79002222222",
+      "client_username": "client2",
       "address": "ул. Пушкина, д. 25, кв. 12",
       "problem_text": "Засорился унитаз, вода не уходит",
       "status": "assigned",
-      "assigned_to_id": 4
+      "assigned_to_username": "master1"
     },
     {
-      "client_id": 3,
-      "client_name": "Сергей Козлов",
-      "phone": "+79003333333",
+      "client_username": "client3",
       "address": "ул. Гагарина, д. 8, кв. 3",
       "problem_text": "Не греет радиатор отопления в комнате",
       "status": "in_progress",
-      "assigned_to_id": 5
+      "assigned_to_username": "master2"
     },
     {
-      "client_id": 1,
-      "client_name": "Иван Петров",
-      "phone": "+79001111111",
+      "client_username": "client1",
       "address": "ул. Ленина, д. 10, кв. 5",
       "problem_text": "Сломалась дверца шкафа, нужно отремонтировать",
       "status": "done",
-      "assigned_to_id": 4
+      "assigned_to_username": "master1"
     }
   ]
 }

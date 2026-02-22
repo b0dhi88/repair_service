@@ -7,7 +7,7 @@
     <ul>
     {% for request in requests %}
         <li>
-            Заявка #{{ request.pk }} - {{ request.status }}
+            Заявка #{{ request.pk }} - {{ request.get_status_display }}
             {% if request.status == 'assigned' %}
                 <a href="{% url 'master:request-start-work' request.pk %}">Начать работу</a>
             {% elif request.status == 'in_progress' %}
