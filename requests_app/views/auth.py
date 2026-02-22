@@ -6,6 +6,18 @@ from django.views import View
 
 
 class RoleBasedLoginView(LoginView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['test_users'] = [
+            {'username': 'client1', 'password': 'client123'},
+            {'username': 'client2', 'password': 'client123'},
+            {'username': 'client3', 'password': 'client123'},
+            {'username': 'dispatcher1', 'password': 'dispatcher123'},
+            {'username': 'master1', 'password': 'master123'},
+            {'username': 'master2', 'password': 'master123'},
+        ]
+        return context
+
     def get_success_url(self):
         user = self.request.user
         if user.is_dispatcher:

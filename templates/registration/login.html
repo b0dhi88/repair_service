@@ -11,6 +11,16 @@
             {% csrf_token %}
             
             <div class="form-group">
+                <label for="test_user_select">Быстрый вход (тестовые пользователи)</label>
+                <select id="test_user_select">
+                    <option value="">-- Выберите пользователя --</option>
+                    {% for user in test_users %}
+                    <option value="{{ user.username }}:{{ user.password }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
                 <label for="id_username">Имя пользователя</label>
                 <input 
                     type="text" 
@@ -46,6 +56,17 @@
             
             <button type="submit" class="login-btn">Войти</button>
         </form>
+
+        <script>
+            document.getElementById('test_user_select').addEventListener('change', function() {
+                const value = this.value;
+                if (value) {
+                    const [username, password] = value.split(':');
+                    document.getElementById('id_username').value = username;
+                    document.getElementById('id_password').value = password;
+                }
+            });
+        </script>
     </div>
 </div>
 {% endblock %}
