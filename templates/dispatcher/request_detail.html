@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Заявка #{{ request.pk }}</h1>
+
+<p><strong>Клиент:</strong> {{ request.client_name }}</p>
+<p><strong>Телефон:</strong> {{ request.client_phone }}</p>
+<p><strong>Адрес:</strong> {{ request.address }}</p>
+<p><strong>Проблема:</strong> {{ request.problem_text }}</p>
+<p><strong>Статус:</strong> {{ request.get_status_display }}</p>
+<p><strong>Создана:</strong> {{ request.created_at }}</p>
+
+{% if request.assigned_to %}
+<p><strong>Мастер:</strong> {{ request.assigned_to.username }}</p>
+{% endif %}
+
+{% if request.status == 'new' %}
+    <a href="{% url 'dispatcher:request-assign' request.pk %}">Назначить мастера</a>
+{% elif request.status == 'assigned' or request.status == 'in_progress' %}
+    <a href="{% url 'dispatcher:request-reassign' request.pk %}">Переназначить</a>
+{% endif %}
+
+{% if request.status != 'done' and request.status != 'canceled' %}
+    | <a href="{% url 'dispatcher:request-cancel' request.pk %}">Отменить</a>
+{% endif %}
+
+<br><br>
+<a href="{% url 'dispatcher:all-requests' %}">Назад к списку</a>
+{% endblock %}

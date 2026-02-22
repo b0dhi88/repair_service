@@ -193,3 +193,8 @@ Exception Value:
 Exception Location:	/app/requests_app/services/validators.py, line 72, in validate_assignment
 Raised during:	requests_app.views.dispatcher.RequestReassignView "'
 
+[01:20]
+'@requests_app/views/dispatcher.py отмененные заявки должны быть в отдельном списке'
+
+[01:26]
+'@requests_app/views/dispatcher.py при нажатии на заявку должны открываться детали'

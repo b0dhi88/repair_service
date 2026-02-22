@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView, View
+from django.views.generic import ListView, UpdateView, View, DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
@@ -182,3 +182,9 @@ class MasterListView(DispatcherRequiredMixin, ListView):
     
     def get_queryset(self):
         return User.objects.filter(role=User.Role.MASTER)
+
+
+class RequestDetailView(DispatcherRequiredMixin, DetailView):
+    model = Request
+    template_name = 'dispatcher/request_detail.html'
+    context_object_name = 'request'
