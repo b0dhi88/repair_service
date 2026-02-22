@@ -180,3 +180,16 @@ web-1  | [22/Feb/2026 18:55:31] "POST /client/requests/create/ HTTP/1.1" 500 888
 
 [01:01]
 '@requests_app/views/dispatcher.py при попытке назначить заявку на мастера она остается неназначенной (new), но у мастера она появляется в списке (новая и недоступная)'
+
+[01:14]
+'при разназначении заявки назначенной на какого-то мастера ошибка "AttributeError at /dispatcher/requests/1/reassign/
+'NoneType' object has no attribute 'role'
+Request Method:	POST
+Request URL:	http://localhost:8000/dispatcher/requests/1/reassign/
+Django Version:	6.0.2
+Exception Type:	AttributeError
+Exception Value:	
+'NoneType' object has no attribute 'role'
+Exception Location:	/app/requests_app/services/validators.py, line 72, in validate_assignment
+Raised during:	requests_app.views.dispatcher.RequestReassignView "'
+

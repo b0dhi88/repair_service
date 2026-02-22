@@ -101,7 +101,7 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
         
         try:
             service.reassign_master(form.instance.pk, new_master, self.request.user)
-            old_name = old_master.get_full_name() or old_master.username if old_master else 'None'
+            old_name = (old_master.get_full_name() or old_master.username) if old_master else 'None'
             new_name = new_master.get_full_name() or new_master.username
             messages.success(
                 self.request,

@@ -62,13 +62,16 @@ class RequestValidator:
             master: Мастер для проверки.
             max_active: Максимальное количество активных заак.
                        По умолчанию из настроек.
-            
+        
         Returns:
             True если мастер доступен.
-            
+        
         Raises:
             MasterUnavailableError: Если мастер недоступен.
         """
+        if master is None:
+            raise RequestValidationError('Мастер обязателен для назначения')
+        
         if master.role != User.Role.MASTER:
             raise MasterUnavailableError(master.id, 'Пользователь не является мастером')
         
