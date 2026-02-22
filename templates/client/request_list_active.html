@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои заявки - Активные</h1>
+
+<nav>
+    <a href="{% url 'client:request-list' %}">Все заявки</a> |
+    <a href="{% url 'client:request-active' %}">Активные</a> |
+    <a href="{% url 'client:request-completed' %}">Завершенные</a> |
+    <a href="{% url 'client:request-canceled' %}">Отмененные</a>
+</nav>
+
+{% if requests %}
+    <ul>
+    {% for req in requests %}
+        <li>
+            <a href="{% url 'client:request-detail' req.pk %}">Заявка #{{ req.pk }}</a>
+            - {{ req.get_status_display }} - {{ req.created_at|date:"d.m.Y H:i" }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Активных заявок нет.</p>
+{% endif %}
+
+<a href="{% url 'client:request-create' %}">Создать новую заявку</a>
+{% endblock %}

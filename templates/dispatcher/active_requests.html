@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Активные заявки</h1>
+
+<nav>
+    <a href="{% url 'dispatcher:active-requests' %}">Активные</a> |
+    <a href="{% url 'dispatcher:completed-requests' %}">Завершенные</a> |
+    <a href="{% url 'dispatcher:canceled-requests' %}">Отмененные</a>
+</nav>
+
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            <a href="{% url 'dispatcher:request-detail' request.pk %}">Заявка #{{ request.pk }}</a> - {{ request.client_name }} - {{ request.get_status_display }}
+            {% if request.status == 'new' %}
+                <a href="{% url 'dispatcher:request-assign' request.pk %}">Назначить мастера</a>
+            {% elif request.status == 'assigned' %}
+                <a href="{% url 'dispatcher:request-reassign' request.pk %}">Переназначить</a>
+            {% endif %}
+            {% if request.status != 'done' and request.status != 'canceled' %}
+            <a href="{% url 'dispatcher:request-cancel' request.pk %}">Отменить</a>
+            {% endif %}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет активных заявок.</p>
+{% endif %}
+
+<a href="{% url 'dispatcher:master-list' %}">Список мастеров</a>
+{% endblock %}

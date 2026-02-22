@@ -198,3 +198,6 @@ Raised during:	requests_app.views.dispatcher.RequestReassignView "'
 
 [01:26]
 '@requests_app/views/dispatcher.py при нажатии на заявку должны открываться детали'
+
+[01:35]
+'@requests_app/views/client.py активные (остальные), завершенные и отмененные заявки должны быть в разных списках. так в общем то должно быть во всех списках заявок, во всех дашбордах.'

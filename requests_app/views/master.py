@@ -30,15 +30,29 @@ class AvailableRequestListView(MasterRequiredMixin, ListView):
         ).exclude(assigned_to=self.request.user).order_by('-created_at')
 
 
-class AssignedRequestListView(MasterRequiredMixin, ListView):
+class ActiveRequestListView(MasterRequiredMixin, ListView):
     model = Request
-    template_name = 'master/assigned_requests.html'
+    template_name = 'master/active_requests.html'
     context_object_name = 'requests'
     paginate_by = 10
 
     def get_queryset(self):
         return Request.objects.filter(
-            assigned_to=self.request.user
+            assigned_to=self.request.user,
+            status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+        ).order_by('-created_at')
+
+
+class CompletedRequestListView(MasterRequiredMixin, ListView):
+    model = Request
+    template_name = 'master/completed_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Request.objects.filter(
+            assigned_to=self.request.user,
+            status=Request.Status.DONE
         ).order_by('-created_at')
 
 
@@ -46,7 +60,7 @@ class RequestTakeView(MasterRequiredMixin, UpdateView):
     model = Request
     template_name = 'master/request_take.html'
     fields = []
-    success_url = reverse_lazy('master:assigned-requests')
+    success_url = reverse_lazy('master:active-requests')
 
     def get_queryset(self):
         return Request.objects.filter(status=Request.Status.NEW)
@@ -77,7 +91,7 @@ class RequestStartWorkView(MasterRequiredMixin, UpdateView):
     model = Request
     template_name = 'master/request_start_work.html'
     fields = []
-    success_url = reverse_lazy('master:assigned-requests')
+    success_url = reverse_lazy('master:active-requests')
 
     def get_queryset(self):
         return Request.objects.filter(assigned_to=self.request.user)
@@ -108,7 +122,7 @@ class RequestCompleteView(MasterRequiredMixin, UpdateView):
     model = Request
     template_name = 'master/request_complete.html'
     fields = []
-    success_url = reverse_lazy('master:assigned-requests')
+    success_url = reverse_lazy('master:active-requests')
 
     def get_queryset(self):
         return Request.objects.filter(assigned_to=self.request.user)

@@ -20,15 +20,18 @@ class DispatcherRequiredMixin(UserPassesTestMixin):
         return user.is_authenticated and user.is_dispatcher
 
 
-class AllRequestListView(DispatcherRequiredMixin, ListView):
+ACTIVE_STATUSES = [Request.Status.NEW, Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+
+
+class ActiveRequestListView(DispatcherRequiredMixin, ListView):
     model = Request
-    template_name = 'dispatcher/all_requests.html'
+    template_name = 'dispatcher/active_requests.html'
     context_object_name = 'requests'
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = Request.objects.exclude(
-            status=Request.Status.CANCELED
+        queryset = Request.objects.filter(
+            status__in=ACTIVE_STATUSES
         ).order_by('-created_at')
         
         status = self.request.GET.get('status')
@@ -36,6 +39,18 @@ class AllRequestListView(DispatcherRequiredMixin, ListView):
             queryset = queryset.filter(status=status)
         
         return queryset
+
+
+class CompletedRequestListView(DispatcherRequiredMixin, ListView):
+    model = Request
+    template_name = 'dispatcher/completed_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Request.objects.filter(
+            status=Request.Status.DONE
+        ).order_by('-created_at')
 
 
 class CanceledRequestListView(DispatcherRequiredMixin, ListView):
@@ -54,7 +69,7 @@ class RequestAssignView(DispatcherRequiredMixin, UpdateView):
     model = Request
     template_name = 'dispatcher/request_assign.html'
     fields = ['assigned_to']
-    success_url = reverse_lazy('dispatcher:all-requests')
+    success_url = reverse_lazy('dispatcher:active-requests')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -96,7 +111,7 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
     model = Request
     template_name = 'dispatcher/request_reassign.html'
     fields = ['assigned_to']
-    success_url = reverse_lazy('dispatcher:all-requests')
+    success_url = reverse_lazy('dispatcher:active-requests')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -172,7 +187,7 @@ class RequestCancelView(DispatcherRequiredMixin, View):
             )
             return redirect('dispatcher:request-cancel', pk=pk)
         
-        return redirect('dispatcher:all-requests')
+        return redirect('dispatcher:active-requests')
 
 
 class MasterListView(DispatcherRequiredMixin, ListView):

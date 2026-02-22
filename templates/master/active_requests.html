@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои заявки - Активные</h1>
+
+<nav>
+    <a href="{% url 'master:active-requests' %}">Активные</a> |
+    <a href="{% url 'master:completed-requests' %}">Завершенные</a> |
+    <a href="{% url 'master:available-requests' %}">Доступные</a>
+</nav>
+
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            <a href="#">Заявка #{{ request.pk }}</a> - {{ request.get_status_display }}
+            {% if request.status == 'assigned' %}
+                <a href="{% url 'master:request-start-work' request.pk %}">Начать работу</a>
+            {% elif request.status == 'in_progress' %}
+                <a href="{% url 'master:request-complete' request.pk %}">Завершить</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет активных заявок.</p>
+{% endif %}
+
+<a href="{% url 'master:available-requests' %}">Доступные заявки</a>
+{% endblock %}

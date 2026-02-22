@@ -21,23 +21,53 @@ class ClientRequiredMixin(UserPassesTestMixin):
         return self.request.user.is_authenticated and self.request.user.is_client
 
 
-class RequestListView(ClientRequiredMixin, ListView):
+ACTIVE_STATUSES = [Request.Status.NEW, Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+
+
+class ActiveRequestListView(ClientRequiredMixin, ListView):
     model = Request
-    template_name = 'client/request_list.html'
+    template_name = 'client/request_list_active.html'
     context_object_name = 'requests'
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Request.objects.filter(client=self.request.user).order_by('-created_at')
-        logger.info(f"User: {self.request.user}, Requests: {list(queryset.values('id', 'status', 'created_at'))}")
-        return queryset
+        return Request.objects.filter(
+            client=self.request.user,
+            status__in=ACTIVE_STATUSES
+        ).order_by('-created_at')
+
+
+class CompletedRequestListView(ClientRequiredMixin, ListView):
+    model = Request
+    template_name = 'client/request_list_completed.html'
+    context_object_name = 'requests'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Request.objects.filter(
+            client=self.request.user,
+            status=Request.Status.DONE
+        ).order_by('-created_at')
+
+
+class CanceledRequestListView(ClientRequiredMixin, ListView):
+    model = Request
+    template_name = 'client/request_list_canceled.html'
+    context_object_name = 'requests'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Request.objects.filter(
+            client=self.request.user,
+            status=Request.Status.CANCELED
+        ).order_by('-created_at')
 
 
 class RequestCreateView(ClientRequiredMixin, CreateView):
     model = Request
     template_name = 'client/request_form.html'
     fields = ['address', 'problem_text']
-    success_url = reverse_lazy('client:request-list')
+    success_url = reverse_lazy('client:request-active')
 
     def form_valid(self, form):
         service = RequestService()
@@ -88,3 +118,29 @@ class RequestCancelView(ClientRequiredMixin, View):
             messages.error(self.request, str(e))
             return redirect('client:request-cancel', pk=pk)
         return redirect('client:request-list')
+
+
+class ClientRequestDashboardView(ClientRequiredMixin, View):
+    template_name = 'client/request_dashboard.html'
+
+    def get(self, request):
+        active_requests = Request.objects.filter(
+            client=request.user,
+            status__in=ACTIVE_STATUSES
+        ).order_by('-created_at')[:10]
+
+        completed_requests = Request.objects.filter(
+            client=request.user,
+            status=Request.Status.DONE
+        ).order_by('-created_at')[:10]
+
+        canceled_requests = Request.objects.filter(
+            client=request.user,
+            status=Request.Status.CANCELED
+        ).order_by('-created_at')[:10]
+
+        return render(request, self.template_name, {
+            'active_requests': active_requests,
+            'completed_requests': completed_requests,
+            'canceled_requests': canceled_requests,
+        })

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Доступные заявки</h1>
+<h1>Мои заявки - Завершенные</h1>
 
 <nav>
     <a href="{% url 'master:active-requests' %}">Активные</a> |
@@ -13,13 +13,12 @@
     <ul>
     {% for request in requests %}
         <li>
-            Заявка #{{ request.pk }} - {{ request.client_name }} - {{ request.get_status_display }}
-            <a href="{% url 'master:request-take' request.pk %}">Взять</a>
+            Заявка #{{ request.pk }} - {{ request.get_status_display }}
         </li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>Нет доступных заявок.</p>
+    <p>Нет завершенных заявок.</p>
 {% endif %}
 
 <a href="{% url 'master:active-requests' %}">Мои заявки</a>
