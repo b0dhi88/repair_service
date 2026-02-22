@@ -602,6 +602,505 @@ managment команда то что нужно. только пусть дан�
 
 -------------------------------------------------------------
 
+---kilo
+[1]
+страница /logout возвращает 405
+[2]
+web-1  | Method Not Allowed (GET): /logout/
+web-1  | [22/Feb/2026 10:50:04] "GET /logout/ HTTP/1.1" 405 0
+после docker compose down && docker compose up --build
+[3]
+"web-1  | [22/Feb/2026 11:07:41] "GET /logout/ HTTP/1.1" 302 0
+web-1  | [22/Feb/2026 11:07:41] "GET /login/ HTTP/1.1" 200 1498
+web-1  | User logged in: username=dispatcher1, role=dispatcher, is_superuser=False
+web-1  | [22/Feb/2026 11:07:53] "POST /login/ HTTP/1.1" 302 0
+web-1  | Forbidden (Permission denied): /dispatcher/requests/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+web-1  |     return self.dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 74, in dispatch
+web-1  |     return super().dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 135, in dispatch
+web-1  |     return self.handle_no_permission()
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+web-1  |     raise PermissionDenied(self.get_permission_denied_message())
+web-1  | django.core.exceptions.PermissionDenied
+web-1  | [22/Feb/2026 11:07:53] "GET /dispatcher/requests/ HTTP/1.1" 403 135 "
+[4]
+web-1  | [22/Feb/2026 11:09:47] "GET /logout/ HTTP/1.1" 302 0
+web-1  | [22/Feb/2026 11:09:47] "GET /login/ HTTP/1.1" 200 1498
+web-1  | User logged in: username=dispatcher1, role=dispatcher, is_superuser=False
+web-1  | [22/Feb/2026 11:09:55] "POST /login/ HTTP/1.1" 302 0
+web-1  | Forbidden (Permission denied): /dispatcher/requests/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+web-1  |     return self.dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 74, in dispatch
+web-1  |     return super().dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 135, in dispatch
+web-1  |     return self.handle_no_permission()
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+web-1  |     raise PermissionDenied(self.get_permission_denied_message())
+web-1  | django.core.exceptions.PermissionDenied
+web-1  | Forbidden (Permission denied): /dispatcher/requests/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+web-1  |     return self.dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 74, in dispatch
+web-1  |     return super().dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 135, in dispatch
+web-1  |     return self.handle_no_permission()
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+web-1  |     raise PermissionDenied(self.get_permission_denied_message())
+web-1  | django.core.exceptions.PermissionDenied
+web-1  | [22/Feb/2026 11:09:55] "GET /dispatcher/requests/ HTTP/1.1" 403 135 
+[5]
+web-1  | [22/Feb/2026 11:13:10] "GET /logout/ HTTP/1.1" 302 0
+web-1  | [22/Feb/2026 11:13:10] "GET /login/ HTTP/1.1" 200 1498
+web-1  | User logged in: username=dispatcher1, role=dispatcher, is_superuser=False
+web-1  | [22/Feb/2026 11:13:19] "POST /login/ HTTP/1.1" 302 0
+web-1  | Forbidden (Permission denied): /dispatcher/requests/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+web-1  |     return self.dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 74, in dispatch
+web-1  |     return super().dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 135, in dispatch
+web-1  |     return self.handle_no_permission()
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+web-1  |     raise PermissionDenied(self.get_permission_denied_message())
+web-1  | django.core.exceptions.PermissionDenied
+web-1  | Forbidden (Permission denied): /dispatcher/requests/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+web-1  |     return self.dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 74, in dispatch
+web-1  |     return super().dispatch(request, *args, **kwargs)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 135, in dispatch
+web-1  |     return self.handle_no_permission()
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 49, in handle_no_permission
+web-1  |     raise PermissionDenied(self.get_permission_denied_message())
+web-1  | django.core.exceptions.PermissionDenied
+web-1  | [22/Feb/2026 11:13:19] "GET /dispatcher/requests/ HTTP/1.1" 403 135
+
+(тут проблема была найдена:
+Корневая причина проблемы: в urls.py была функция get_urlpatterns(namespace), которая должна была возвращать разные URL-паттерны для разных namespaces, но она никогда не вызывалась - urlpatterns просто присваивался результату get_urlpatterns('requests'). В результате все namespaces (client, master, dispatcher) использовали одни и те же URL-паттерны (client views), и URL /dispatcher/requests/ резолвился к client.RequestListView, а не к dispatcher.AllRequestListView.
+Исправление: созданы отдельные файлы urls_client.py, urls_master.py, urls_dispatcher.py с разными app_name для каждой роли.)
+
+[1]
+проведи кодревью
+[2]
+разверни подробнее первую проблему. по /logout я попадаю на страницу login
+[3]
+как мне воспроизвести эту проблему? 
+(добавил LOGIN_URL = '/login/' в settings.py)
+
+[1]
+возможно стоит перенести urls в отдельную папку?
+[2]
+в приложении requests_app несколько urls для разных пользователей + главный urls. возможно стоит сгруппировать их
+[3]
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 136, in check_custom_error_handlers
+web-1  |     handler = resolver.resolve_error_handler(status_code)
+web-1  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 743, in resolve_error_handler
+web-1  |     callback = getattr(self.urlconf_module, "handler%s" % view_type, None)
+web-1  |                        ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | 
+web-1  | During handling of the above exception, another exception occurred:
+web-1  | 
+web-1  | Traceback (most recent call last):
+web-1  |   File "/app/manage.py", line 22, in <module>
+web-1  |     main()
+web-1  |   File "/app/manage.py", line 18, in main
+web-1  |     execute_from_command_line(sys.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 443, in execute_from_command_line
+web-1  |     utility.execute()
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 437, in execute
+web-1  |     self.fetch_command(subcommand).run_from_argv(self.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+web-1  |     self.execute(*args, **cmd_options)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 461, in execute
+web-1  |     self.check(**check_kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 496, in check
+web-1  |     all_issues = checks.run_checks(
+web-1  |                  ^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/registry.py", line 89, in run_checks
+web-1  |     new_errors = check(app_configs=app_configs, databases=databases)
+web-1  |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 138, in check_custom_error_handlers
+web-1  |     path = getattr(resolver.urlconf_module, "handler%s" % status_code)
+web-1  |                    ^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 136, in check_custom_error_handlers
+web-1  |     handler = resolver.resolve_error_handler(status_code)
+web-1  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 743, in resolve_error_handler
+web-1  |     callback = getattr(self.urlconf_module, "handler%s" % view_type, None)
+web-1  |                        ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | 
+web-1  | During handling of the above exception, another exception occurred:
+web-1  | 
+web-1  | Traceback (most recent call last):
+web-1  |   File "/app/manage.py", line 22, in <module>
+web-1  |     main()
+web-1  |   File "/app/manage.py", line 18, in main
+web-1  |     execute_from_command_line(sys.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 443, in execute_from_command_line
+web-1  |     utility.execute()
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 437, in execute
+web-1  |     self.fetch_command(subcommand).run_from_argv(self.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+web-1  |     self.execute(*args, **cmd_options)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 461, in execute
+web-1  |     self.check(**check_kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 496, in check
+web-1  |     all_issues = checks.run_checks(
+web-1  |                  ^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/registry.py", line 89, in run_checks
+web-1  |     new_errors = check(app_configs=app_configs, databases=databases)
+web-1  |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 138, in check_custom_error_handlers
+web-1  |     path = getattr(resolver.urlconf_module, "handler%s" % status_code)
+web-1  |                    ^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 136, in check_custom_error_handlers
+web-1  |     handler = resolver.resolve_error_handler(status_code)
+web-1  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 743, in resolve_error_handler
+web-1  |     callback = getattr(self.urlconf_module, "handler%s" % view_type, None)
+web-1  |                        ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | 
+web-1  | During handling of the above exception, another exception occurred:
+web-1  | 
+web-1  | Traceback (most recent call last):
+web-1  |   File "/app/manage.py", line 22, in <module>
+web-1  |     main()
+web-1  |   File "/app/manage.py", line 18, in main
+web-1  |     execute_from_command_line(sys.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 443, in execute_from_command_line
+web-1  |     utility.execute()
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/__init__.py", line 437, in execute
+web-1  |     self.fetch_command(subcommand).run_from_argv(self.argv)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+web-1  |     self.execute(*args, **cmd_options)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 461, in execute
+web-1  |     self.check(**check_kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 496, in check
+web-1  |     all_issues = checks.run_checks(
+web-1  |                  ^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/registry.py", line 89, in run_checks
+web-1  |     new_errors = check(app_configs=app_configs, databases=databases)
+web-1  |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 138, in check_custom_error_handlers
+web-1  |     path = getattr(resolver.urlconf_module, "handler%s" % status_code)
+web-1  |                    ^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | Watching for file changes with StatReloader
+web-1  | Watching for file changes with StatReloader
+web-1  | Performing system checks...
+web-1  | 
+web-1  | Exception in thread django-main-thread:
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 136, in check_custom_error_handlers
+web-1  |     handler = resolver.resolve_error_handler(status_code)
+web-1  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 743, in resolve_error_handler
+web-1  |     callback = getattr(self.urlconf_module, "handler%s" % view_type, None)
+web-1  |                        ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client'
+web-1  | 
+web-1  | During handling of the above exception, another exception occurred:
+web-1  | 
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+web-1  |     self.run()
+web-1  |   File "/usr/local/lib/python3.12/threading.py", line 1012, in run
+web-1  |     self._target(*self._args, **self._kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/autoreload.py", line 64, in wrapper
+web-1  |     fn(*args, **kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 134, in inner_run
+web-1  |     self.check(**check_kwargs)
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/management/base.py", line 496, in check
+web-1  |     all_issues = checks.run_checks(
+web-1  |                  ^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/registry.py", line 89, in run_checks
+web-1  |     new_errors = check(app_configs=app_configs, databases=databases)
+web-1  |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/core/checks/urls.py", line 138, in check_custom_error_handlers
+web-1  |     path = getattr(resolver.urlconf_module, "handler%s" % status_code)
+web-1  |                    ^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+web-1  |     res = instance.__dict__[self.name] = self.func(instance)
+web-1  |                                          ^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+web-1  |     return import_module(self.urlconf_name)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+web-1  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+web-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+web-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+web-1  |   File "/app/repair_service/urls.py", line 16, in <module>
+web-1  |     path('client/', include('requests_app.urls_client')),
+web-1  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+web-1  |     urlconf_module = import_module(urlconf_module)
+web-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+web-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+web-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+web-1  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+web-1  |   File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+web-1  | ModuleNotFoundError: No module named 'requests_app.urls_client' 
+
+[4]
+исправь ошибки импорта
 
 
 
