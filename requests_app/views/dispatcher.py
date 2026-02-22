@@ -1,8 +1,9 @@
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, View
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect, render
 
 from ..models import Request, User
 from ..services import (
@@ -120,35 +121,40 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class RequestCancelView(DispatcherRequiredMixin, UpdateView):
-    model = Request
-    template_name = 'dispatcher/request_cancel.html'
-    fields = []
-    success_url = reverse_lazy('dispatcher:all-requests')
+class RequestCancelView(DispatcherRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        req = get_object_or_404(
+            Request.objects.exclude(status__in=[Request.Status.DONE, Request.Status.CANCELED]),
+            pk=pk
+        )
+        return render(request, 'dispatcher/request_cancel.html', {'request': req})
 
-    def get_queryset(self):
-        return Request.objects.exclude(status__in=[Request.Status.DONE, Request.Status.CANCELED])
-
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        req = get_object_or_404(
+            Request.objects.exclude(status__in=[Request.Status.DONE, Request.Status.CANCELED]),
+            pk=pk
+        )
         service = RequestService()
         
         try:
-            service.cancel(form.instance.pk, self.request.user)
+            service.cancel(req.pk, self.request.user)
             messages.success(self.request, 'Заявка отменена')
         except RequestPermissionError as e:
             messages.error(self.request, str(e))
-            return self.form_invalid(form)
+            return redirect('dispatcher:request-cancel', pk=pk)
         except RequestValidationError as e:
             messages.error(self.request, str(e))
-            return self.form_invalid(form)
+            return redirect('dispatcher:request-cancel', pk=pk)
         except ConcurrentModificationError:
             messages.error(
                 self.request,
                 'Заявка была изменена другим пользователем. Обновите страницу.'
             )
-            return self.form_invalid(form)
+            return redirect('dispatcher:request-cancel', pk=pk)
         
-        return super().form_valid(form)
+        return redirect('dispatcher:all-requests')
 
 
 class MasterListView(DispatcherRequiredMixin, ListView):

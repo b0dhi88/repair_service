@@ -1,7 +1,7 @@
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, View
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 import logging
@@ -62,24 +62,29 @@ class RequestDetailView(ClientRequiredMixin, DetailView):
         return Request.objects.filter(client=self.request.user)
 
 
-class RequestCancelView(ClientRequiredMixin, UpdateView):
-    model = Request
-    template_name = 'client/request_cancel.html'
-    fields = []
-    success_url = reverse_lazy('client:request-list')
+class RequestCancelView(ClientRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        req = get_object_or_404(
+            Request.objects.filter(client=request.user),
+            pk=pk
+        )
+        return render(request, 'client/request_cancel.html', {'request': req})
 
-    def get_queryset(self):
-        return Request.objects.filter(client=self.request.user)
-
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        req = get_object_or_404(
+            Request.objects.filter(client=request.user),
+            pk=pk
+        )
         service = RequestService()
         try:
-            service.cancel(form.instance.pk, self.request.user)
+            service.cancel(req.pk, self.request.user)
             messages.success(self.request, 'Заявка отменена')
         except RequestPermissionError as e:
             messages.error(self.request, str(e))
-            return self.form_invalid(form)
+            return redirect('client:request-cancel', pk=pk)
         except RequestValidationError as e:
             messages.error(self.request, str(e))
-            return self.form_invalid(form)
-        return redirect(self.get_success_url())
+            return redirect('client:request-cancel', pk=pk)
+        return redirect('client:request-list')
