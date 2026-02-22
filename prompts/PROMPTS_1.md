@@ -175,3 +175,5 @@ web-1  | [22/Feb/2026 18:55:31] "POST /client/requests/create/ HTTP/1.1" 500 888
 [00:42]
 '@requests_app/views/dispatcher.py не срабатывает service.cancel(form.instance.pk, self.request.user)'
 
+[00:53]
+'в @requests_app/views/dispatcher.py RequestCancelView на удаленной заявке остается кнопка отмены'

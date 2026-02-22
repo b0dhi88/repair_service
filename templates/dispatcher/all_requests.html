@@ -13,8 +13,9 @@
             {% elif request.status == 'assigned' %}
                 <a href="{% url 'dispatcher:request-reassign' request.pk %}">Переназначить</a>
             {% endif %}
+            {% if request.status != 'done' and request.status != 'canceled' %}
             <a href="{% url 'dispatcher:request-cancel' request.pk %}">Отменить</a>
-        </li>
+            {% endif %}
     {% endfor %}
     </ul>
 {% else %}
