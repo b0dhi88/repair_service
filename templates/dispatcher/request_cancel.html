@@ -1,12 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Отменить заявку</h1>
-
-<p>Вы уверены, что хотите отменить заявку #{{ request.pk }}?</p>
-
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Да, отменить</button>
-</form>
+<div class="form-page">
+    <a href="{% url 'dispatcher:all-requests' %}" class="back-link">← Назад к списку</a>
+    
+    <div class="form-card">
+        <h1 class="form-title">Отменить заявку</h1>
+        
+        <div class="confirm-message">
+            <p>Вы уверены, что хотите отменить заявку #{{ request.pk }}?</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url 'dispatcher:all-requests' %}" class="btn btn-outline">Отмена</a>
+                <button type="submit" class="btn btn-danger">Да, отменить</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

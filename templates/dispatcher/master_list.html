@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Список мастеров</h1>
+<div class="page-header">
+    <h1 class="page-title">Список мастеров</h1>
+</div>
+
+<div class="filter-tabs">
+    <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab">Все заявки</a>
+    <a href="{% url 'dispatcher:master-list' %}" class="filter-tab active">Мастера</a>
+</div>
 
 {% if masters %}
-    <ul>
-    {% for master in masters %}
-        <li>{{ master.username }} - {{ master.get_full_name }}</li>
-    {% endfor %}
-    </ul>
+    <div class="master-list">
+        {% for master in masters %}
+            <div class="master-card">
+                <div class="master-avatar">
+                    {{ master.first_name.0|default:master.username.0|upper }}
+                </div>
+                <div class="master-info">
+                    <div class="master-name">{{ master.get_full_name|default:master.username }}</div>
+                    <div class="master-phone">📞 {{ master.phone }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% else %}
-    <p>Нет мастеров.</p>
+    <div class="empty-state">
+        <div class="empty-state-icon">👷</div>
+        <div class="empty-state-text">Нет мастеров</div>
+    </div>
 {% endif %}
 {% endblock %}

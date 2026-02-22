@@ -41,6 +41,22 @@ class ActiveRequestListView(DispatcherRequiredMixin, ListView):
         return queryset
 
 
+class AllRequestListView(DispatcherRequiredMixin, ListView):
+    model = Request
+    template_name = 'dispatcher/all_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Request.objects.all().order_by('-created_at')
+        
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        return queryset
+
+
 class CompletedRequestListView(DispatcherRequiredMixin, ListView):
     model = Request
     template_name = 'dispatcher/completed_requests.html'

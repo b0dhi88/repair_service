@@ -1,11 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Создать заявку</h1>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Создать</button>
-</form>
+<div class="form-page">
+    <a href="{% url 'client:request-list' %}" class="back-link">← Назад к списку</a>
+    
+    <div class="form-card">
+        <h1 class="form-title">Создать новую заявку</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="error-message">{{ field.errors.0 }}</span>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small style="color: var(--text-secondary);">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="form-actions">
+                <a href="{% url 'client:request-list' %}" class="btn btn-outline">Отмена</a>
+                <button type="submit" class="btn btn-primary">Создать заявку</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

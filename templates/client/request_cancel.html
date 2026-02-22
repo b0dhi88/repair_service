@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Отменить заявку #{{ request.pk }}?</h1>
-
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Да, отменить</button>
-    <a href="{% url 'client:request-detail' request.pk %}">Нет, назад</a>
-</form>
+<div class="form-page">
+    <a href="{% url 'client:request-detail' request.pk %}" class="back-link">← Назад к заявке</a>
+    
+    <div class="form-card">
+        <h1 class="form-title">Отменить заявку</h1>
+        
+        <div class="confirm-message">
+            <p>Вы уверены, что хотите отменить заявку #{{ request.pk }}?</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url 'client:request-detail' request.pk %}" class="btn btn-outline">Отмена</a>
+                <button type="submit" class="btn btn-danger">Да, отменить</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

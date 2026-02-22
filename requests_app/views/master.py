@@ -29,6 +29,23 @@ class AvailableRequestListView(MasterRequiredMixin, ListView):
             status__in=[Request.Status.NEW, Request.Status.ASSIGNED]
         ).exclude(assigned_to=self.request.user).order_by('-created_at')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['stats'] = self.get_stats()
+        return context
+
+    def get_stats(self):
+        return {
+            'active': Request.objects.filter(
+                assigned_to=self.request.user,
+                status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+            ).count(),
+            'completed': Request.objects.filter(
+                assigned_to=self.request.user,
+                status=Request.Status.DONE
+            ).count(),
+        }
+
 
 class ActiveRequestListView(MasterRequiredMixin, ListView):
     model = Request
@@ -42,6 +59,23 @@ class ActiveRequestListView(MasterRequiredMixin, ListView):
             status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
         ).order_by('-created_at')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['stats'] = self.get_stats()
+        return context
+
+    def get_stats(self):
+        return {
+            'active': Request.objects.filter(
+                assigned_to=self.request.user,
+                status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+            ).count(),
+            'completed': Request.objects.filter(
+                assigned_to=self.request.user,
+                status=Request.Status.DONE
+            ).count(),
+        }
+
 
 class CompletedRequestListView(MasterRequiredMixin, ListView):
     model = Request
@@ -54,6 +88,23 @@ class CompletedRequestListView(MasterRequiredMixin, ListView):
             assigned_to=self.request.user,
             status=Request.Status.DONE
         ).order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['stats'] = self.get_stats()
+        return context
+
+    def get_stats(self):
+        return {
+            'active': Request.objects.filter(
+                assigned_to=self.request.user,
+                status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+            ).count(),
+            'completed': Request.objects.filter(
+                assigned_to=self.request.user,
+                status=Request.Status.DONE
+            ).count(),
+        }
 
 
 class RequestTakeView(MasterRequiredMixin, UpdateView):

@@ -10,15 +10,33 @@
 </head>
 <body>
     {% if user.is_authenticated %}
-    <nav style="padding: 10px; background: #f0f0f0; margin-bottom: 20px;">
-        <span>Вы вошли как: {{ user.username }} ({{ user.first_name }} {{ user.last_name }})</span>
-        <form action="{% url 'logout' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit" style="margin-left: 20px;">Выйти</button>
-        </form>
-    </nav>
+    <header class="site-header">
+        <div class="header-left">
+            <a href="/" class="logo">🔧 Repair Service</a>
+        </div>
+        
+        <nav class="main-nav">
+            {% if user.is_master %}
+            {% elif user.is_dispatcher %}
+                <a href="{% url 'dispatcher:all-requests' %}" class="nav-link">Заявки</a>
+                <a href="{% url 'dispatcher:master-list' %}" class="nav-link">Мастера</a>
+            {% endif %}
+        </nav>
+        
+        <div class="header-right">
+            <span class="user-info">
+                <span class="user-name">{{ user.first_name }} {{ user.last_name|default:user.username }}</span>
+                <span class="user-role">{{ user.get_role_display }}</span>
+            </span>
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline">Выйти</button>
+            </form>
+        </div>
+    </header>
     {% endif %}
-    <main class="content">
+
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 

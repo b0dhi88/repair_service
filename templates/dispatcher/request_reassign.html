@@ -1,13 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Переназначить мастера</h1>
-
-<p>Заявка #{{ request.pk }}</p>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Переназначить</button>
-</form>
+<div class="form-page">
+    <a href="{% url 'dispatcher:all-requests' %}" class="back-link">← Назад к списку</a>
+    
+    <div class="form-card">
+        <h1 class="form-title">Переназначить мастера</h1>
+        
+        <p style="margin-bottom: 24px; color: var(--text-secondary);">Заявка #{{ request.pk }}</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="error-message">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="form-actions">
+                <a href="{% url 'dispatcher:all-requests' %}" class="btn btn-outline">Отмена</a>
+                <button type="submit" class="btn btn-warning">Переназначить</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

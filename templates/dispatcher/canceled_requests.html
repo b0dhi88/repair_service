@@ -1,24 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Отмененные заявки</h1>
+<div class="page-header">
+    <h1 class="page-title">Отмененные заявки</h1>
+</div>
 
-<nav>
-    <a href="{% url 'dispatcher:active-requests' %}">Активные</a> |
-    <a href="{% url 'dispatcher:completed-requests' %}">Завершенные</a> |
-    <a href="{% url 'dispatcher:canceled-requests' %}">Отмененные</a>
-</nav>
+<div class="filter-tabs">
+    <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab">Все</a>
+    <a href="{% url 'dispatcher:active-requests' %}" class="filter-tab">Активные</a>
+    <a href="{% url 'dispatcher:completed-requests' %}" class="filter-tab">Завершенные</a>
+    <a href="{% url 'dispatcher:canceled-requests' %}" class="filter-tab active">Отмененные</a>
+</div>
 
 {% if requests %}
-    <ul>
-    {% for request in requests %}
-        <li>
-            Заявка #{{ request.pk }} - {{ request.client_name }} - {{ request.get_status_display }}
-    {% endfor %}
-    </ul>
+    <div class="requests-grid">
+        {% for req in requests %}
+            <div class="request-card">
+                <div class="request-card-header">
+                    <span class="request-id">Заявка #{{ req.pk }}</span>
+                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+                </div>
+                <div class="request-card-body">
+                    <div class="request-info">
+                        <span class="icon">📍</span>
+                        <span class="text">{{ req.address|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">🔧</span>
+                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">👤</span>
+                        <span class="text">{{ req.client_name }}</span>
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+                <div class="request-card-actions">
+                    <a href="{% url 'dispatcher:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% else %}
-    <p>Нет отмененных заявок.</p>
+    <div class="empty-state">
+        <div class="empty-state-icon">🚫</div>
+        <div class="empty-state-text">Нет отмененных заявок</div>
+    </div>
 {% endif %}
-
-<a href="{% url 'dispatcher:master-list' %}">Список мастеров</a>
 {% endblock %}

@@ -1,25 +1,54 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Мои заявки - Завершенные</h1>
+<div class="page-header">
+    <h1 class="page-title">Завершенные заявки</h1>
+    <div class="page-header-actions">
+        <div class="stats-inline">
+            <span class="stat"><span class="stat-label">Активные:</span> <strong>{{ stats.active }}</strong></span>
+            <span class="stat"><span class="stat-label">Завершенные:</span> <strong>{{ stats.completed }}</strong></span>
+        </div>
+    </div>
+</div>
 
-<nav>
-    <a href="{% url 'master:active-requests' %}">Активные</a> |
-    <a href="{% url 'master:completed-requests' %}">Завершенные</a> |
-    <a href="{% url 'master:available-requests' %}">Доступные</a>
-</nav>
+<div class="filter-tabs">
+    <a href="{% url 'master:active-requests' %}" class="filter-tab">Мои заявки</a>
+    <a href="{% url 'master:available-requests' %}" class="filter-tab">Доступные</a>
+    <a href="{% url 'master:completed-requests' %}" class="filter-tab active">Завершенные</a>
+</div>
 
 {% if requests %}
-    <ul>
-    {% for request in requests %}
-        <li>
-            Заявка #{{ request.pk }} - {{ request.get_status_display }}
-        </li>
-    {% endfor %}
-    </ul>
+    <div class="requests-grid">
+        {% for req in requests %}
+            <div class="request-card">
+                <div class="request-card-header">
+                    <span class="request-id">Заявка #{{ req.pk }}</span>
+                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+                </div>
+                <div class="request-card-body">
+                    <div class="request-info">
+                        <span class="icon">📍</span>
+                        <span class="text">{{ req.address|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">🔧</span>
+                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">👤</span>
+                        <span class="text">{{ req.client_name }}</span>
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% else %}
-    <p>Нет завершенных заявок.</p>
+    <div class="empty-state">
+        <div class="empty-state-icon">✅</div>
+        <div class="empty-state-text">У вас нет завершенных заявок</div>
+    </div>
 {% endif %}
-
-<a href="{% url 'master:active-requests' %}">Мои заявки</a>
 {% endblock %}

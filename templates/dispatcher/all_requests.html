@@ -1,31 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Все заявки</h1>
+<div class="page-header">
+    <h1 class="page-title">Все заявки</h1>
+</div>
 
-<nav>
-    <a href="{% url 'dispatcher:all-requests' %}">Активные</a> |
-    <a href="{% url 'dispatcher:canceled-requests' %}">Отмененные</a>
-</nav>
+<div class="filter-tabs">
+    <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab">Все</a>
+    <a href="{% url 'dispatcher:active-requests' %}" class="filter-tab active">Активные</a>
+    <a href="{% url 'dispatcher:completed-requests' %}" class="filter-tab">Завершенные</a>
+    <a href="{% url 'dispatcher:canceled-requests' %}" class="filter-tab">Отмененные</a>
+</div>
 
 {% if requests %}
-    <ul>
-    {% for request in requests %}
-        <li>
-            <a href="{% url 'dispatcher:request-detail' request.pk %}">Заявка #{{ request.pk }}</a> - {{ request.client_name }} - {{ request.get_status_display }}
-            {% if request.status == 'new' %}
-                <a href="{% url 'dispatcher:request-assign' request.pk %}">Назначить мастера</a>
-            {% elif request.status == 'assigned' %}
-                <a href="{% url 'dispatcher:request-reassign' request.pk %}">Переназначить</a>
-            {% endif %}
-            {% if request.status != 'done' and request.status != 'canceled' %}
-            <a href="{% url 'dispatcher:request-cancel' request.pk %}">Отменить</a>
-            {% endif %}
-    {% endfor %}
-    </ul>
+    <div class="requests-grid">
+        {% for req in requests %}
+            <div class="request-card">
+                <div class="request-card-header">
+                    <span class="request-id">Заявка #{{ req.pk }}</span>
+                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+                </div>
+                <div class="request-card-body">
+                    <div class="request-info">
+                        <span class="icon">📍</span>
+                        <span class="text">{{ req.address|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">🔧</span>
+                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
+                    </div>
+                    <div class="request-info">
+                        <span class="icon">👤</span>
+                        <span class="text">{{ req.client_name }} ({{ req.client.phone }})</span>
+                    </div>
+                    {% if req.assigned_to %}
+                    <div class="request-info">
+                        <span class="icon">🔨</span>
+                        <span class="text">Мастер: {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="request-meta">
+                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+                <div class="request-card-actions">
+                    <a href="{% url 'dispatcher:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
+                    {% if req.status == 'new' %}
+                        <a href="{% url 'dispatcher:request-assign' req.pk %}" class="btn btn-primary btn-sm">Назначить</a>
+                    {% elif req.status == 'assigned' %}
+                        <a href="{% url 'dispatcher:request-reassign' req.pk %}" class="btn btn-warning btn-sm">Переназначить</a>
+                    {% endif %}
+                    {% if req.status != 'done' and req.status != 'canceled' %}
+                        <a href="{% url 'dispatcher:request-cancel' req.pk %}" class="btn btn-danger btn-sm">Отменить</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% else %}
-    <p>Нет заявок.</p>
+    <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-text">Заявок пока нет</div>
+    </div>
 {% endif %}
-
-<a href="{% url 'dispatcher:master-list' %}">Список мастеров</a>
 {% endblock %}

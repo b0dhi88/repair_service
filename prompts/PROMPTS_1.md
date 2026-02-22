@@ -201,3 +201,31 @@ Raised during:	requests_app.views.dispatcher.RequestReassignView "'
 
 [01:35]
 '@requests_app/views/client.py активные (остальные), завершенные и отмененные заявки должны быть в разных списках. так в общем то должно быть во всех списках заявок, во всех дашбордах.'
+
+[02:08]
+'реализуй верстку шаблонов с верхней навигацией, элементами в виде блоков. в минималистичном стиле'
+
+[02:36]
+'в @requests_app/views/client.py из сайт-хедера стоит убрать кнопки заявок. статистику сделать компактной и перенести в page-header. там же оставить кнопку новой заявки.'
+[02:38]
+'"TemplateSyntaxError at /client/requests/
+Invalid block tag on line 109: 'else', expected 'endblock'. Did you forget to register or load this tag?
+Request Method:	GET
+Request URL:	http://localhost:8000/client/requests/
+Django Version:	6.0.2
+Exception Type:	TemplateSyntaxError
+Exception Value:	
+Invalid block tag on line 109: 'else', expected 'endblock'. Did you forget to register or load this tag?
+Exception Location:	/usr/local/lib/python3.12/site-packages/django/template/base.py, line 634, in invalid_block_tag
+Raised during:	requests_app.views.client.ClientRequestDashboardView "
+похоже где-то забыл endblock'
+
+[02:44]
+'@requests_app/views/dispatcher.py оставь в main-nav две кнопки: заявки и мастера'
+
+[02:49]
+'для @requests_app/views/master.py убери кнопки из main-nav. и добавь статистику, как у клиента.'
+[02:52]
+'отцентрируй статистику'
+[02:54]
+'page-title верни влево'

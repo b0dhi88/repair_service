@@ -13,6 +13,7 @@ from ..views.client import (
 app_name = 'client'
 
 urlpatterns = [
+    path('requests/dashboard/', ClientRequestDashboardView.as_view(), name='request-dashboard'),
     path('requests/', ClientRequestDashboardView.as_view(), name='request-list'),
     path('requests/active/', ActiveRequestListView.as_view(), name='request-active'),
     path('requests/completed/', CompletedRequestListView.as_view(), name='request-completed'),
