@@ -1,10 +1,16 @@
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 from ..models import Request, User
+from ..services import (
+    RequestService,
+    RequestPermissionError,
+    RequestValidationError,
+)
 
 
 class ClientRequiredMixin(UserPassesTestMixin):
@@ -36,9 +42,17 @@ class RequestCreateView(ClientRequiredMixin, CreateView):
         return initial
 
     def form_valid(self, form):
-        form.instance.client = self.request.user
-        messages.success(self.request, 'Заявка успешно создана')
-        return super().form_valid(form)
+        service = RequestService()
+        try:
+            service.create_request(self.request.user, form.cleaned_data)
+            messages.success(self.request, 'Заявка успешно создана')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            form.add_error(e.field or '__all__', str(e))
+            return self.form_invalid(form)
+        return redirect(self.get_success_url())
 
 
 class RequestDetailView(ClientRequiredMixin, DetailView):
@@ -60,11 +74,14 @@ class RequestCancelView(ClientRequiredMixin, UpdateView):
         return Request.objects.filter(client=self.request.user)
 
     def form_valid(self, form):
-        request = form.instance
-        if not request.can_cancel(self.request.user):
-            raise PermissionDenied('Вы не можете отменить эту заявку')
-        
-        request.status = Request.Status.CANCELED
-        request.save(update_fields=['status', 'updated_at'])
-        messages.success(self.request, 'Заявка отменена')
-        return super().form_valid(form)
+        service = RequestService()
+        try:
+            service.cancel(form.instance.pk, self.request.user)
+            messages.success(self.request, 'Заявка отменена')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        return redirect(self.get_success_url())

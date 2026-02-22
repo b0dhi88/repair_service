@@ -5,6 +5,12 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 from ..models import Request, User
+from ..services import (
+    RequestService,
+    RequestPermissionError,
+    RequestValidationError,
+    ConcurrentModificationError,
+)
 
 
 class DispatcherRequiredMixin(UserPassesTestMixin):
@@ -44,13 +50,28 @@ class RequestAssignView(DispatcherRequiredMixin, UpdateView):
         return Request.objects.filter(status__in=[Request.Status.NEW])
 
     def form_valid(self, form):
-        request = form.instance
-        if request.status != Request.Status.NEW:
-            raise PermissionDenied('Можно назначать только новые заявки')
+        master = form.cleaned_data['assigned_to']
+        service = RequestService()
         
-        request.status = Request.Status.ASSIGNED
-        request.save(update_fields=['assigned_to', 'status', 'updated_at'])
-        messages.success(self.request, f'Заявка назначена мастеру {request.assigned_to}')
+        try:
+            service.assign_master(form.instance.pk, master, self.request.user)
+            messages.success(
+                self.request,
+                f'Заявка назначена мастеру {master.get_full_name() or master.username}'
+            )
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            form.add_error(e.field or '__all__', str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)
 
 
@@ -71,10 +92,31 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
         )
 
     def form_valid(self, form):
+        new_master = form.cleaned_data['assigned_to']
         old_master = form.instance.assigned_to
-        form.instance.status = Request.Status.ASSIGNED
-        form.instance.save(update_fields=['assigned_to', 'status', 'updated_at'])
-        messages.success(self.request, f'Заявка переназначена с {old_master} на {form.instance.assigned_to}')
+        service = RequestService()
+        
+        try:
+            service.reassign_master(form.instance.pk, new_master, self.request.user)
+            old_name = old_master.get_full_name() or old_master.username if old_master else 'None'
+            new_name = new_master.get_full_name() or new_master.username
+            messages.success(
+                self.request,
+                f'Заявка переназначена с {old_name} на {new_name}'
+            )
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            form.add_error(e.field or '__all__', str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)
 
 
@@ -88,9 +130,24 @@ class RequestCancelView(DispatcherRequiredMixin, UpdateView):
         return Request.objects.exclude(status__in=[Request.Status.DONE, Request.Status.CANCELED])
 
     def form_valid(self, form):
-        form.instance.status = Request.Status.CANCELED
-        form.instance.save(update_fields=['status', 'updated_at'])
-        messages.success(self.request, 'Заявка отменена')
+        service = RequestService()
+        
+        try:
+            service.cancel(form.instance.pk, self.request.user)
+            messages.success(self.request, 'Заявка отменена')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)
 
 

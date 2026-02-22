@@ -5,6 +5,12 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 from ..models import Request, User
+from ..services import (
+    RequestService,
+    RequestPermissionError,
+    RequestValidationError,
+    ConcurrentModificationError,
+)
 
 
 class MasterRequiredMixin(UserPassesTestMixin):
@@ -46,11 +52,24 @@ class RequestTakeView(MasterRequiredMixin, UpdateView):
         return Request.objects.filter(status=Request.Status.NEW)
 
     def form_valid(self, form):
-        request = form.instance
-        request.assigned_to = self.request.user
-        request.status = Request.Status.ASSIGNED
-        request.save(update_fields=['assigned_to', 'status', 'updated_at'])
-        messages.success(self.request, 'Заявка взята в работу')
+        service = RequestService()
+        
+        try:
+            service.take_work(form.instance.pk, self.request.user)
+            messages.success(self.request, 'Заявка взята в работу')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            form.add_error(e.field or '__all__', str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)
 
 
@@ -64,13 +83,24 @@ class RequestStartWorkView(MasterRequiredMixin, UpdateView):
         return Request.objects.filter(assigned_to=self.request.user)
 
     def form_valid(self, form):
-        request = form.instance
-        if not request.can_take_work(self.request.user):
-            raise PermissionDenied('Вы не можете начать работу над этой заявкой')
+        service = RequestService()
         
-        request.status = Request.Status.IN_PROGRESS
-        request.save(update_fields=['status', 'updated_at'])
-        messages.success(self.request, 'Работа над заявкой начата')
+        try:
+            service.start_work(form.instance.pk, self.request.user)
+            messages.success(self.request, 'Работа над заявкой начата')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)
 
 
@@ -84,11 +114,22 @@ class RequestCompleteView(MasterRequiredMixin, UpdateView):
         return Request.objects.filter(assigned_to=self.request.user)
 
     def form_valid(self, form):
-        request = form.instance
-        if not request.can_complete(self.request.user):
-            raise PermissionDenied('Вы не можете завершить эту заявку')
+        service = RequestService()
         
-        request.status = Request.Status.DONE
-        request.save(update_fields=['status', 'updated_at'])
-        messages.success(self.request, 'Заявка выполнена')
+        try:
+            service.complete(form.instance.pk, self.request.user)
+            messages.success(self.request, 'Заявка выполнена')
+        except RequestPermissionError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except RequestValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except ConcurrentModificationError:
+            messages.error(
+                self.request,
+                'Заявка была изменена другим пользователем. Обновите страницу.'
+            )
+            return self.form_invalid(form)
+        
         return super().form_valid(form)

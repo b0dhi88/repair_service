@@ -11,7 +11,7 @@
 <body>
     {% if user.is_authenticated %}
     <nav style="padding: 10px; background: #f0f0f0; margin-bottom: 20px;">
-        <span>Вы вошли как: {{ user.username }}</span>
+        <span>Вы вошли как: {{ user.username }} ({{ user.first_name }} {{ user.last_name }})</span>
         <form action="{% url 'logout' %}" method="post" style="display: inline;">
             {% csrf_token %}
             <button type="submit" style="margin-left: 20px;">Выйти</button>
