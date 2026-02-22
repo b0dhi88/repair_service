@@ -27,13 +27,27 @@ class AllRequestListView(DispatcherRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = Request.objects.all().order_by('-created_at')
+        queryset = Request.objects.exclude(
+            status=Request.Status.CANCELED
+        ).order_by('-created_at')
         
         status = self.request.GET.get('status')
         if status:
             queryset = queryset.filter(status=status)
         
         return queryset
+
+
+class CanceledRequestListView(DispatcherRequiredMixin, ListView):
+    model = Request
+    template_name = 'dispatcher/canceled_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Request.objects.filter(
+            status=Request.Status.CANCELED
+        ).order_by('-created_at')
 
 
 class RequestAssignView(DispatcherRequiredMixin, UpdateView):

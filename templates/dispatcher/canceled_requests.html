@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Отмененные заявки</h1>
+
+<nav>
+    <a href="{% url 'dispatcher:all-requests' %}">Активные</a> |
+    <a href="{% url 'dispatcher:canceled-requests' %}">Отмененные</a>
+</nav>
+
+{% if requests %}
+    <ul>
+    {% for request in requests %}
+        <li>
+            Заявка #{{ request.pk }} - {{ request.client_name }} - {{ request.get_status_display }}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет отмененных заявок.</p>
+{% endif %}
+
+<a href="{% url 'dispatcher:master-list' %}">Список мастеров</a>
+{% endblock %}
