@@ -41,8 +41,8 @@ class ActiveRequestListView(MasterRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['stats'] = self.get_stats()
         
-        in_progress = [r for r in context['requests'] if str(r.status) == 'in_progress']
-        assigned = [r for r in context['requests'] if str(r.status) == 'assigned']
+        in_progress = [r for r in context['requests'] if r.status == Request.Status.IN_PROGRESS]
+        assigned = [r for r in context['requests'] if r.status == Request.Status.ASSIGNED]
         
         context['in_progress_requests'] = in_progress
         context['assigned_requests'] = assigned
@@ -108,13 +108,19 @@ class RequestStartWorkView(MasterRequiredMixin, UpdateView):
     success_url = reverse_lazy('master:active-requests')
 
     def get_queryset(self):
-        return Request.objects.filter(assigned_to=self.request.user)
+        return Request.objects.select_related('client').filter(assigned_to=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = self.request.META.get('HTTP_REFERER', '')
+        return context
 
     def form_valid(self, form):
         service = RequestService()
         
         try:
             service.start_work(form.instance.pk, self.request.user)
+            form.instance.refresh_from_db()
             messages.success(self.request, 'Работа над заявкой начата')
         except RequestPermissionError as e:
             messages.error(self.request, str(e))
@@ -128,6 +134,9 @@ class RequestStartWorkView(MasterRequiredMixin, UpdateView):
                 'Заявка была изменена другим пользователем. Обновите страницу.'
             )
             return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f'Произошла ошибка: {str(e)}')
+            return self.form_invalid(form)
         
         return super().form_valid(form)
 
@@ -139,13 +148,19 @@ class RequestCompleteView(MasterRequiredMixin, UpdateView):
     success_url = reverse_lazy('master:active-requests')
 
     def get_queryset(self):
-        return Request.objects.filter(assigned_to=self.request.user)
+        return Request.objects.select_related('client').filter(assigned_to=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = self.request.META.get('HTTP_REFERER', '')
+        return context
 
     def form_valid(self, form):
         service = RequestService()
         
         try:
             service.complete(form.instance.pk, self.request.user)
+            form.instance.refresh_from_db()
             messages.success(self.request, 'Заявка выполнена')
         except RequestPermissionError as e:
             messages.error(self.request, str(e))

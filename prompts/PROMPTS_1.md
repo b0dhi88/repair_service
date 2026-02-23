@@ -271,3 +271,20 @@ Raised during:	requests_app.views.dispatcher.RequestDetailView'
 'сейчас мастер может взять новую, неназначенную заявку. это неправильно'
 [11:44]
 '@requests_app/views/master.py нужно на странице "мои заявки" мастер показывать сначала заявки в работе, а ниже ожидающие заявки'
+
+[12:01]
+'TemplateDoesNotExist at /master/requests/15/start/
+master/request_start_work.html
+Request Method:	GET
+Request URL:	http://localhost:8000/master/requests/15/start/
+Django Version:	6.0.2
+Exception Type:	TemplateDoesNotExist
+Exception Value:	
+master/request_start_work.html
+Exception Location:	/usr/local/lib/python3.12/site-packages/django/template/loader.py, line 47, in select_template
+Raised during:	requests_app.views.master.RequestStartWorkView 
+@requests_app/views/master.py при взятии назначенной работы'
+[12:02]
+'нужно проверить верстку новых шаблонов на соответствие общей стилистике. возьми за пример экран деталей заявку у диспетчера
+@requests_app/views/master.py 
+@requests_app/views/dispatcher.py'

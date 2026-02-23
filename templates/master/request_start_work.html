@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="detail-page">
+    <a href="{{ back_url|default:'/master/requests/' }}" class="back-link">← Назад к списку</a>
+    
+    <div class="detail-card">
+        <div class="detail-header">
+            <h2 class="detail-title">Заявка #{{ object.pk }}</h2>
+            <span class="status-badge status-{{ object.status }}">{{ object.get_status_display }}</span>
+        </div>
+        <div class="detail-body">
+            <div class="detail-row">
+                <span class="detail-label">Клиент:</span>
+                <span class="detail-value">{{ object.client_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Телефон:</span>
+                <span class="detail-value">{{ object.client.phone }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Адрес:</span>
+                <span class="detail-value">{{ object.address }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Проблема:</span>
+                <span class="detail-value">{{ object.problem_text }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Статус:</span>
+                <span class="detail-value">{{ object.get_status_display }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Создана:</span>
+                <span class="detail-value">{{ object.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+        </div>
+        <form method="post" class="detail-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Начать работу</button>
+            <a href="{% url 'master:active-requests' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

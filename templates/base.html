@@ -17,6 +17,8 @@
         
         <nav class="main-nav">
             {% if user.is_master %}
+                <a href="{% url 'master:active-requests' %}" class="nav-link">Мои заявки</a>
+                <a href="{% url 'master:completed-requests' %}" class="nav-link">Завершенные</a>
             {% elif user.is_dispatcher %}
                 <a href="{% url 'dispatcher:new-requests' %}" class="nav-link">Заявки</a>
                 <a href="{% url 'dispatcher:master-list' %}" class="nav-link">Мастера</a>
@@ -37,6 +39,14 @@
     {% endif %}
 
     <main class="main-content">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         {% block content %}{% endblock %}
     </main>
 
