@@ -4,9 +4,10 @@ URL configuration for repair_service project.
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from requests_app.views.auth import RoleBasedLoginView, RoleBasedLogoutView
+from requests_app.views.auth import RoleBasedLoginView, RoleBasedLogoutView, RootView
 
 urlpatterns = [
+    path('', RootView.as_view(), name='root'),
     path('admin/', admin.site.urls),
     path('login/', RoleBasedLoginView.as_view(
         template_name='registration/login.html',

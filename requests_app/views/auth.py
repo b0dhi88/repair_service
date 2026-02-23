@@ -3,6 +3,20 @@ from django.contrib.auth import logout as auth_logout
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views import View
+from django.views.generic import RedirectView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+class RootView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self):
+        user = self.request.user
+        if user.is_dispatcher:
+            return '/dispatcher/requests/'
+        elif user.is_master:
+            return '/master/requests/'
+        elif user.is_client:
+            return '/client/requests/'
+        return '/'
 
 
 class RoleBasedLoginView(LoginView):
