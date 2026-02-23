@@ -6,6 +6,58 @@ from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
+import random
+
+from requests_app.models import User, Request
+
+
+class GetFreeMasterView(View):
+    """Получение ID любого мастера без активных заявок в работе"""
+    
+    def get(self, request):
+        busy_master_ids = Request.objects.filter(
+            status=Request.Status.IN_PROGRESS,
+            assigned_to__isnull=False
+        ).values_list('assigned_to_id', flat=True).distinct()
+        
+        free_master = User.objects.filter(
+            role=User.Role.MASTER
+        ).exclude(
+            id__in=busy_master_ids
+        ).first()
+        
+        if free_master:
+            return JsonResponse({'master_id': free_master.id, 'master_username': free_master.username})
+        return JsonResponse({'error': 'Нет свободных мастеров'}, status=404)
+
+
+class GetRandomMasterView(View):
+    """Получение ID случайного мастера (может быть занят)"""
+    
+    def get(self, request):
+        master_ids = list(User.objects.filter(
+            role=User.Role.MASTER
+        ).values_list('id', flat=True))
+        
+        if not master_ids:
+            return JsonResponse({'error': 'Нет мастеров'}, status=404)
+        
+        random_master_id = random.choice(master_ids)
+        master = User.objects.get(id=random_master_id)
+        
+        return JsonResponse({'master_id': master.id, 'master_username': master.username})
+
+
+class GetMasterUsernameView(View):
+    """Получение username мастера по его pid (user_id)"""
+    
+    def get(self, request, pid):
+        try:
+            master = User.objects.get(id=pid, role=User.Role.MASTER)
+            return JsonResponse({'username': master.username})
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Мастер не найден'}, status=404)
 
 
 class RootView(LoginRequiredMixin, RedirectView):
