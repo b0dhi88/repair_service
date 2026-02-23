@@ -1,5 +1,6 @@
 from django.urls import path
 from ..views.dispatcher import (
+    NewRequestListView,
     ActiveRequestListView,
     AllRequestListView,
     CompletedRequestListView,
@@ -9,12 +10,14 @@ from ..views.dispatcher import (
     RequestCancelView,
     MasterListView,
     RequestDetailView,
+    MasterRequestListView,
 )
 
 app_name = 'dispatcher'
 
 urlpatterns = [
-    path('requests/', ActiveRequestListView.as_view(), name='active-requests'),
+    path('requests/', NewRequestListView.as_view(), name='new-requests'),
+    path('requests/active/', ActiveRequestListView.as_view(), name='active-requests'),
     path('requests/all/', AllRequestListView.as_view(), name='all-requests'),
     path('requests/completed/', CompletedRequestListView.as_view(), name='completed-requests'),
     path('requests/canceled/', CanceledRequestListView.as_view(), name='canceled-requests'),
@@ -23,4 +26,5 @@ urlpatterns = [
     path('requests/<int:pk>/reassign/', RequestReassignView.as_view(), name='request-reassign'),
     path('requests/<int:pk>/cancel/', RequestCancelView.as_view(), name='request-cancel'),
     path('masters/', MasterListView.as_view(), name='master-list'),
+    path('masters/<int:master_id>/requests/', MasterRequestListView.as_view(), name='master-requests'),
 ]

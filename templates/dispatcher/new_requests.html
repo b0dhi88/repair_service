@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h1 class="page-title">Активные заявки</h1>
+    <h1 class="page-title">Новые заявки</h1>
 </div>
 
 {% include 'dispatcher/tabs.html' %}
@@ -42,12 +42,8 @@
                     <a href="{% url 'dispatcher:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
                     {% if req.status == 'new' %}
                         <a href="{% url 'dispatcher:request-assign' req.pk %}" class="btn btn-primary btn-sm">Назначить</a>
-                    {% elif req.status == 'assigned' %}
-                        <a href="{% url 'dispatcher:request-reassign' req.pk %}" class="btn btn-warning btn-sm">Переназначить</a>
                     {% endif %}
-                    {% if req.status != 'done' and req.status != 'canceled' %}
-                        <a href="{% url 'dispatcher:request-cancel' req.pk %}" class="btn btn-danger btn-sm">Отменить</a>
-                    {% endif %}
+                    <a href="{% url 'dispatcher:request-cancel' req.pk %}" class="btn btn-danger btn-sm">Отменить</a>
                 </div>
             </div>
         {% endfor %}
@@ -55,7 +51,7 @@
 {% else %}
     <div class="empty-state">
         <div class="empty-state-icon">📋</div>
-        <div class="empty-state-text">Нет активных заявок</div>
+        <div class="empty-state-text">Нет новых заявок</div>
     </div>
 {% endif %}
 {% endblock %}

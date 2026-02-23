@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="detail-page">
-    <a href="{% url 'dispatcher:all-requests' %}" class="back-link">← Назад к списку</a>
+    <a href="{{ back_url|default:'/dispatcher/requests/' }}" class="back-link">← Назад к списку</a>
     
     <div class="detail-card">
         <div class="detail-header">

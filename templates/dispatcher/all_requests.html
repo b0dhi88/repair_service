@@ -5,12 +5,7 @@
     <h1 class="page-title">Все заявки</h1>
 </div>
 
-<div class="filter-tabs">
-    <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab">Все</a>
-    <a href="{% url 'dispatcher:active-requests' %}" class="filter-tab active">Активные</a>
-    <a href="{% url 'dispatcher:completed-requests' %}" class="filter-tab">Завершенные</a>
-    <a href="{% url 'dispatcher:canceled-requests' %}" class="filter-tab">Отмененные</a>
-</div>
+{% include 'dispatcher/tabs.html' %}
 
 {% if requests %}
     <div class="requests-grid">

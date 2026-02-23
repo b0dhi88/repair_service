@@ -23,6 +23,24 @@ class DispatcherRequiredMixin(UserPassesTestMixin):
 ACTIVE_STATUSES = [Request.Status.NEW, Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
 
 
+class NewRequestListView(DispatcherRequiredMixin, ListView):
+    model = Request
+    template_name = 'dispatcher/new_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Request.objects.filter(
+            status=Request.Status.NEW
+        ).order_by('-created_at')
+        
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        return queryset
+
+
 class ActiveRequestListView(DispatcherRequiredMixin, ListView):
     model = Request
     template_name = 'dispatcher/active_requests.html'
@@ -85,7 +103,7 @@ class RequestAssignView(DispatcherRequiredMixin, UpdateView):
     model = Request
     template_name = 'dispatcher/request_assign.html'
     fields = ['assigned_to']
-    success_url = reverse_lazy('dispatcher:active-requests')
+    success_url = reverse_lazy('dispatcher:new-requests')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -94,6 +112,11 @@ class RequestAssignView(DispatcherRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return Request.objects.filter(status__in=[Request.Status.NEW])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = self.request.META.get('HTTP_REFERER', '')
+        return context
 
     def form_valid(self, form):
         master = form.cleaned_data['assigned_to']
@@ -127,7 +150,7 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
     model = Request
     template_name = 'dispatcher/request_reassign.html'
     fields = ['assigned_to']
-    success_url = reverse_lazy('dispatcher:active-requests')
+    success_url = reverse_lazy('dispatcher:new-requests')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -138,6 +161,11 @@ class RequestReassignView(DispatcherRequiredMixin, UpdateView):
         return Request.objects.filter(
             status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = self.request.META.get('HTTP_REFERER', '')
+        return context
 
     def form_valid(self, form):
         new_master = form.cleaned_data['assigned_to']
@@ -177,7 +205,9 @@ class RequestCancelView(DispatcherRequiredMixin, View):
             Request.objects.exclude(status__in=[Request.Status.DONE, Request.Status.CANCELED]),
             pk=pk
         )
-        return render(request, 'dispatcher/request_cancel.html', {'request': req})
+        context = {'request': req}
+        context['back_url'] = request.META.get('HTTP_REFERER', '')
+        return render(request, 'dispatcher/request_cancel.html', context)
 
     def post(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
@@ -219,3 +249,34 @@ class RequestDetailView(DispatcherRequiredMixin, DetailView):
     model = Request
     template_name = 'dispatcher/request_detail.html'
     context_object_name = 'request'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = self.request.META.get('HTTP_REFERER', '')
+        return context
+
+
+class MasterRequestListView(DispatcherRequiredMixin, ListView):
+    model = Request
+    template_name = 'dispatcher/master_requests.html'
+    context_object_name = 'requests'
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        master = get_object_or_404(User, pk=self.kwargs['master_id'], role=User.Role.MASTER)
+        context['master'] = master
+        context['master_id'] = master.pk
+        return context
+
+    def get_queryset(self):
+        master_id = self.kwargs['master_id']
+        queryset = Request.objects.filter(
+            assigned_to_id=master_id
+        ).order_by('-created_at')
+
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset

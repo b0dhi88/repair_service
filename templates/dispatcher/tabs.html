@@ -1,0 +1,7 @@
+<div class="filter-tabs">
+    <a href="{% url 'dispatcher:new-requests' %}" class="filter-tab{% if request.resolver_match.url_name != 'active-requests' and request.resolver_match.url_name != 'completed-requests' and request.resolver_match.url_name != 'canceled-requests' and request.resolver_match.url_name != 'all-requests' %} active{% endif %}">Новые</a>
+    <a href="{% url 'dispatcher:active-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'active-requests' %} active{% endif %}">Активные</a>
+    <a href="{% url 'dispatcher:completed-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'completed-requests' %} active{% endif %}">Завершенные</a>
+    <a href="{% url 'dispatcher:canceled-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'canceled-requests' %} active{% endif %}">Отмененные</a>
+    <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'all-requests' %} active{% endif %}">Все</a>
+</div>

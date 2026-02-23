@@ -41,6 +41,9 @@
                 </div>
                 <div class="request-card-actions">
                     <a href="{% url 'client:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
+                    {% if req.status == 'new' or req.status == 'assigned' %}
+                    <a href="{% url 'client:request-cancel' req.pk %}" class="btn btn-outline btn-sm btn-danger">Отменить</a>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

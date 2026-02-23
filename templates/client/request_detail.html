@@ -41,6 +41,11 @@
             </div>
             {% endif %}
         </div>
+        {% if request.status == 'new' or request.status == 'assigned' %}
+        <div class="detail-actions">
+            <a href="{% url 'client:request-cancel' request.pk %}" class="btn btn-danger">Отменить заявку</a>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

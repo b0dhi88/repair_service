@@ -18,7 +18,7 @@
         <nav class="main-nav">
             {% if user.is_master %}
             {% elif user.is_dispatcher %}
-                <a href="{% url 'dispatcher:all-requests' %}" class="nav-link">Заявки</a>
+                <a href="{% url 'dispatcher:new-requests' %}" class="nav-link">Заявки</a>
                 <a href="{% url 'dispatcher:master-list' %}" class="nav-link">Мастера</a>
             {% endif %}
         </nav>

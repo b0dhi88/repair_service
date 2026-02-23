@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="form-page">
-    <a href="{% url 'dispatcher:all-requests' %}" class="back-link">← Назад к списку</a>
+    <a href="{{ back_url|default:'/dispatcher/requests/' }}" class="back-link">← Назад к списку</a>
     
     <div class="form-card">
         <h1 class="form-title">Переназначить мастера</h1>
@@ -31,7 +31,7 @@
             {% endfor %}
             
             <div class="form-actions">
-                <a href="{% url 'dispatcher:all-requests' %}" class="btn btn-outline">Отмена</a>
+                <a href="{{ back_url|default:'/dispatcher/requests/' }}" class="btn btn-outline">Отмена</a>
                 <button type="submit" class="btn btn-warning">Переназначить</button>
             </div>
         </form>

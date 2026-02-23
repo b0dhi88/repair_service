@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django import forms
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,16 @@ from ..services import (
     RequestPermissionError,
     RequestValidationError,
 )
+
+
+class RequestForm(forms.ModelForm):
+    class Meta:
+        model = Request
+        fields = ['address', 'problem_text']
+        widgets = {
+            'address': forms.TextInput(),
+            'problem_text': forms.Textarea(attrs={'rows': 3}),
+        }
 
 
 class ClientRequiredMixin(UserPassesTestMixin):
@@ -64,9 +75,8 @@ class CanceledRequestListView(ClientRequiredMixin, ListView):
 
 
 class RequestCreateView(ClientRequiredMixin, CreateView):
-    model = Request
+    form_class = RequestForm
     template_name = 'client/request_form.html'
-    fields = ['address', 'problem_text']
     success_url = reverse_lazy('client:request-active')
 
     def form_valid(self, form):

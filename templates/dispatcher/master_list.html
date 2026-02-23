@@ -21,6 +21,9 @@
                     <div class="master-name">{{ master.get_full_name|default:master.username }}</div>
                     <div class="master-phone">📞 {{ master.phone }}</div>
                 </div>
+                <div class="master-actions">
+                    <a href="{% url 'dispatcher:master-requests' master.pk %}" class="btn btn-primary btn-sm">Заявки</a>
+                </div>
             </div>
         {% endfor %}
     </div>

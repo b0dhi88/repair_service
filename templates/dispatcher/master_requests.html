@@ -2,10 +2,18 @@
 
 {% block content %}
 <div class="page-header">
-    <h1 class="page-title">Активные заявки</h1>
+    <h1 class="page-title">Заявки мастера: {{ master.get_full_name|default:master.username }}</h1>
+    <a href="{% url 'dispatcher:master-list' %}" class="btn btn-outline">← К списку мастеров</a>
 </div>
 
-{% include 'dispatcher/tabs.html' %}
+<div class="filter-tabs">
+    <a href="{% url 'dispatcher:master-requests' master_id %}" class="filter-tab {% if not request.GET.status %}active{% endif %}">Все</a>
+    <a href="{% url 'dispatcher:master-requests' master_id %}?status=new" class="filter-tab {% if request.GET.status == 'new' %}active{% endif %}">Новые</a>
+    <a href="{% url 'dispatcher:master-requests' master_id %}?status=assigned" class="filter-tab {% if request.GET.status == 'assigned' %}active{% endif %}">Назначенные</a>
+    <a href="{% url 'dispatcher:master-requests' master_id %}?status=in_progress" class="filter-tab {% if request.GET.status == 'in_progress' %}active{% endif %}">В работе</a>
+    <a href="{% url 'dispatcher:master-requests' master_id %}?status=done" class="filter-tab {% if request.GET.status == 'done' %}active{% endif %}">Завершённые</a>
+    <a href="{% url 'dispatcher:master-requests' master_id %}?status=canceled" class="filter-tab {% if request.GET.status == 'canceled' %}active{% endif %}">Отменённые</a>
+</div>
 
 {% if requests %}
     <div class="requests-grid">
@@ -28,21 +36,13 @@
                         <span class="icon">👤</span>
                         <span class="text">{{ req.client_name }} ({{ req.client.phone }})</span>
                     </div>
-                    {% if req.assigned_to %}
-                    <div class="request-info">
-                        <span class="icon">🔨</span>
-                        <span class="text">Мастер: {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}</span>
-                    </div>
-                    {% endif %}
                     <div class="request-meta">
                         <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
                     </div>
                 </div>
                 <div class="request-card-actions">
                     <a href="{% url 'dispatcher:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
-                    {% if req.status == 'new' %}
-                        <a href="{% url 'dispatcher:request-assign' req.pk %}" class="btn btn-primary btn-sm">Назначить</a>
-                    {% elif req.status == 'assigned' %}
+                    {% if req.status == 'assigned' %}
                         <a href="{% url 'dispatcher:request-reassign' req.pk %}" class="btn btn-warning btn-sm">Переназначить</a>
                     {% endif %}
                     {% if req.status != 'done' and req.status != 'canceled' %}
@@ -55,7 +55,7 @@
 {% else %}
     <div class="empty-state">
         <div class="empty-state-icon">📋</div>
-        <div class="empty-state-text">Нет активных заявок</div>
+        <div class="empty-state-text">У этого мастера нет заявок</div>
     </div>
 {% endif %}
 {% endblock %}
