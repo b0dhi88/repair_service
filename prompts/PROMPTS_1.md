@@ -360,3 +360,6 @@ Raised during:	requests_app.views.master.RequestStartWorkView
 
 [18:12]
 'добавь в @create_request.sh получение мастера через /test/get_random_master и попытку завершения текущей заявки если она у него есть'
+
+[18:26]
+'добавь новый скрипт test_race.sh который будет использовать create_request.sh для подготовки заявки и далее тестировать одновременное взятие мастером назначенной заявки в работу'

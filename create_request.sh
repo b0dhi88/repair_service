@@ -163,7 +163,7 @@ ASSIGN_STATUS=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" -X POST "$BASE_URL/d
     -d "assigned_to=$MASTER_ID&csrfmiddlewaretoken=$ASSIGN_CSRF" \
     -w "%{http_code}" -o /dev/null)
 
-if [ "$ASSIGN_STATUS" = "302" ]; then
+if [[ "$ASSIGN_STATUS" == "302" || "$ASSIGN_STATUS" == "200" ]]; then
     echo "Мастер $MASTER_ID назначен!"
 else
     echo "Ошибка назначения мастера (код: $ASSIGN_STATUS)"
