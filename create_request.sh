@@ -47,7 +47,7 @@ get_csrf_token() {
     local description="$2"
     local page token
     page=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$url")
-    token=$(echo "$page" | grep -oP 'name="csrfmiddlewaretoken" value="\K[^"]+' | head -1)
+    token=$(echo "$page" | grep -oP 'name="csrfmiddlewaretoken" value="\K[^"]+' | tail -1)
 
     if [ -z "$token" ]; then
         echo "Ошибка: не удалось получить CSRF токен для $description" >&2
@@ -111,26 +111,51 @@ fi
 echo "4. Авторизация как dispatcher1..."
 login "dispatcher1" "dispatcher123" "диспетчера"
 
-echo "5. Получение списка свободных мастеров..."
-MASTER_RESPONSE=$(curl -s -b "$COOKIE_FILE" "$BASE_URL/test/get_free_master/")
+echo "5. Получение случайного мастера..."
+MASTER_RESPONSE=$(curl -s -b "$COOKIE_FILE" "$BASE_URL/test/get_random_master/")
 MASTER_ID=$(echo "$MASTER_RESPONSE" | grep -oP '"master_id":\s*\K\d+' | head -1)
 
 if [ -z "$MASTER_ID" ]; then
-    echo "Не удалось получить свободного мастера, используем ID по умолчанию: 7"
+    echo "Не удалось получить случайного мастера, используем ID по умолчанию: 7"
     MASTER_ID=7
 else
-    echo "Найден свободный мастер с ID: $MASTER_ID"
+    echo "Выбран случайный мастер с ID: $MASTER_ID"
 fi
 
 echo "6. Получение username мастера по PID..."
 MASTER_USERNAME=$(get_master_username_from_pid "$MASTER_ID")
 echo "Username мастера: $MASTER_USERNAME"
 
-echo "7. Получение пароля мастера из seed_data.json..."
+echo "7. Получение пароля мастера..."
 MASTER_PASSWORD=$(get_master_password_from_username "$MASTER_USERNAME")
-echo "Пароль мастера получен"
 
-echo "8. Назначение мастера для заявки $REQUEST_ID..."
+echo "8. Авторизация как мастер $MASTER_USERNAME для проверки активных заявок..."
+login "$MASTER_USERNAME" "$MASTER_PASSWORD" "мастера"
+
+echo "9. Проверка наличия активной заявки у мастера..."
+ACTIVE_REQUEST=$(curl -s -b "$COOKIE_FILE" "$BASE_URL/master/requests/active/" | grep -oP 'href="/master/requests/(\d+)' | head -1 | grep -oP '\d+')
+
+if [ -n "$ACTIVE_REQUEST" ]; then
+    echo "У мастера есть активная заявка $ACTIVE_REQUEST, пробуем завершить её..."
+    COMPLETE_CSRF=$(get_csrf_token "$BASE_URL/master/requests/$ACTIVE_REQUEST/complete/" "завершения заявки")
+    COMPLETE_STATUS=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" -X POST "$BASE_URL/master/requests/$ACTIVE_REQUEST/complete/" \
+        -H "Referer: $BASE_URL/master/requests/$ACTIVE_REQUEST/complete/" \
+        -d "csrfmiddlewaretoken=$COMPLETE_CSRF" \
+        -w "%{http_code}" -o /dev/null)
+    
+    if [ "$COMPLETE_STATUS" = "302" ]; then
+        echo "Заявка $ACTIVE_REQUEST завершена"
+    else
+        echo "Не удалось завершить заявку (код: $COMPLETE_STATUS), продолжаем..."
+    fi
+else
+    echo "У мастера нет активных заявок"
+fi
+
+echo "10. Повторная авторизация как dispatcher1..."
+login "dispatcher1" "dispatcher123" "диспетчера"
+
+echo "11. Назначение мастера для заявки $REQUEST_ID..."
 ASSIGN_CSRF=$(get_csrf_token "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" "назначения мастера")
 
 ASSIGN_STATUS=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" -X POST "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" \

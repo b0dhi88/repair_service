@@ -357,3 +357,6 @@ Raised during:	requests_app.views.master.RequestStartWorkView
 'добавь получение username мастера по его pid через /test/get_master_username, а затем получение пароля по username из seed_data.json'
 [18:02]
 'на основе /test/get_free_master добавь /test/get_random_master'
+
+[18:12]
+'добавь в @create_request.sh получение мастера через /test/get_random_master и попытку завершения текущей заявки если она у него есть'
