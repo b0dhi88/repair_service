@@ -328,23 +328,6 @@ body {
     color: white;
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.stat-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
 .stat-label {
     font-size: 13px;
     color: var(--text-secondary);
@@ -370,6 +353,8 @@ body {
     overflow: hidden;
     transition: all 0.2s;
     box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
 }
 
 .request-card:hover {
@@ -456,6 +441,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex: 1;
 }
 
 .request-info {
@@ -940,10 +926,6 @@ body {
     
     .login-title {
         font-size: 20px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
     }
     
     .master-list {

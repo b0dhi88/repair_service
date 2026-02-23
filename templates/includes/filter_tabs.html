@@ -1,0 +1,17 @@
+<div class="filter-tabs">
+    {% if tab_type == 'client' %}
+        <a href="{% url 'client:request-list' %}" class="filter-tab {% if request.path == '/client/requests/' %}active{% endif %}">Все</a>
+        <a href="{% url 'client:request-active' %}" class="filter-tab {% if 'active' in request.path %}active{% endif %}">Активные</a>
+        <a href="{% url 'client:request-completed' %}" class="filter-tab {% if 'completed' in request.path %}active{% endif %}">Завершенные</a>
+        <a href="{% url 'client:request-canceled' %}" class="filter-tab {% if 'canceled' in request.path %}active{% endif %}">Отмененные</a>
+    {% elif tab_type == 'master' %}
+        <a href="{% url 'master:active-requests' %}" class="filter-tab {% if 'active' in request.path %}active{% endif %}">Мои заявки</a>
+        <a href="{% url 'master:completed-requests' %}" class="filter-tab {% if 'completed' in request.path %}active{% endif %}">Завершенные</a>
+    {% elif tab_type == 'dispatcher' %}
+        <a href="{% url 'dispatcher:new-requests' %}" class="filter-tab{% if request.resolver_match.url_name != 'active-requests' and request.resolver_match.url_name != 'completed-requests' and request.resolver_match.url_name != 'canceled-requests' and request.resolver_match.url_name != 'all-requests' %} active{% endif %}">Новые</a>
+        <a href="{% url 'dispatcher:active-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'active-requests' %} active{% endif %}">Активные</a>
+        <a href="{% url 'dispatcher:completed-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'completed-requests' %} active{% endif %}">Завершенные</a>
+        <a href="{% url 'dispatcher:canceled-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'canceled-requests' %} active{% endif %}">Отмененные</a>
+        <a href="{% url 'dispatcher:all-requests' %}" class="filter-tab{% if request.resolver_match.url_name == 'all-requests' %} active{% endif %}">Все</a>
+    {% endif %}
+</div>

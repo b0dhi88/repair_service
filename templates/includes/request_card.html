@@ -1,0 +1,62 @@
+{% load static %}
+<div class="request-card">
+    <div class="request-card-header">
+        <span class="request-id">Заявка #{{ request.pk }}</span>
+        <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+    </div>
+    <div class="request-card-body">
+        <div class="request-info">
+            <span class="icon">📍</span>
+            <span class="text">{{ request.address|truncatechars:80 }}</span>
+        </div>
+        <div class="request-info">
+            <span class="icon">🔧</span>
+            <span class="text">{{ request.problem_text|truncatechars:80 }}</span>
+        </div>
+        {% if role == 'master' or role == 'dispatcher' %}
+        <div class="request-info">
+            <span class="icon">👤</span>
+            <span class="text">{{ request.client_name }} ({{ request.client.phone }})</span>
+        </div>
+        {% endif %}
+        {% if role == 'dispatcher' and request.assigned_to %}
+        <div class="request-info">
+            <span class="icon">🔨</span>
+            <span class="text">Мастер: {{ request.assigned_to.get_full_name|default:request.assigned_to.username }}</span>
+        </div>
+        {% endif %}
+        {% if role == 'client' and request.assigned_to %}
+        <div class="request-info">
+            <span class="icon">👤</span>
+            <span class="text">{{ request.assigned_to.get_full_name|default:request.assigned_to.username }}</span>
+        </div>
+        {% endif %}
+        <div class="request-meta">
+            <span>📅 {{ request.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+    </div>
+    <div class="request-card-actions">
+        {% if role == 'client' %}
+            <a href="{% url 'client:request-detail' request.pk %}" class="btn btn-outline btn-sm">Детали</a>
+            {% if request.status == 'new' or request.status == 'assigned' %}
+                <a href="{% url 'client:request-cancel' request.pk %}" class="btn btn-outline btn-sm btn-danger">Отменить</a>
+            {% endif %}
+        {% elif role == 'master' %}
+            {% if request.status == 'assigned' %}
+                <a href="{% url 'master:request-start-work' request.pk %}" class="btn btn-primary btn-sm">Начать работу</a>
+            {% elif request.status == 'in_progress' %}
+                <a href="{% url 'master:request-complete' request.pk %}" class="btn btn-success btn-sm">Завершить</a>
+            {% endif %}
+        {% elif role == 'dispatcher' %}
+            <a href="{% url 'dispatcher:request-detail' request.pk %}" class="btn btn-outline btn-sm">Детали</a>
+            {% if request.status == 'new' %}
+                <a href="{% url 'dispatcher:request-assign' request.pk %}" class="btn btn-primary btn-sm">Назначить</a>
+            {% elif request.status == 'assigned' %}
+                <a href="{% url 'dispatcher:request-reassign' request.pk %}" class="btn btn-warning btn-sm">Переназначить</a>
+            {% endif %}
+            {% if request.status != 'done' and request.status != 'canceled' %}
+                <a href="{% url 'dispatcher:request-cancel' request.pk %}" class="btn btn-danger btn-sm">Отменить</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

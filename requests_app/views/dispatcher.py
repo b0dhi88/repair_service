@@ -250,6 +250,9 @@ class RequestDetailView(DispatcherRequiredMixin, DetailView):
     template_name = 'dispatcher/request_detail.html'
     context_object_name = 'request'
 
+    def get_queryset(self):
+        return Request.objects.select_related('assigned_to')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['back_url'] = self.request.META.get('HTTP_REFERER', '')

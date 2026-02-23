@@ -1,0 +1,15 @@
+{% if requests %}
+<div class="requests-grid">
+    {% for req in requests %}
+        {% include 'includes/request_card.html' with request=req role=role %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">📋</div>
+    <div class="empty-state-text">{{ empty_text|default:"Нет заявок" }}</div>
+    {% if empty_subtext %}
+    <div class="empty-state-subtext">{{ empty_subtext }}</div>
+    {% endif %}
+</div>
+{% endif %}

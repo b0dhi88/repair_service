@@ -45,7 +45,7 @@ class ActiveRequestListView(ClientRequiredMixin, ListView):
         return Request.objects.filter(
             client=self.request.user,
             status__in=ACTIVE_STATUSES
-        ).order_by('-created_at')
+        ).select_related('assigned_to').order_by('-created_at')
 
 
 class CompletedRequestListView(ClientRequiredMixin, ListView):
@@ -58,7 +58,7 @@ class CompletedRequestListView(ClientRequiredMixin, ListView):
         return Request.objects.filter(
             client=self.request.user,
             status=Request.Status.DONE
-        ).order_by('-created_at')
+        ).select_related('assigned_to').order_by('-created_at')
 
 
 class CanceledRequestListView(ClientRequiredMixin, ListView):
@@ -99,7 +99,7 @@ class RequestDetailView(ClientRequiredMixin, DetailView):
     context_object_name = 'request'
 
     def get_queryset(self):
-        return Request.objects.filter(client=self.request.user)
+        return Request.objects.filter(client=self.request.user).select_related('assigned_to')
 
 
 class RequestCancelView(ClientRequiredMixin, View):
@@ -137,7 +137,7 @@ class ClientRequestDashboardView(ClientRequiredMixin, View):
         active_requests = Request.objects.filter(
             client=request.user,
             status__in=ACTIVE_STATUSES
-        ).order_by('-created_at')[:30]
+        ).select_related('assigned_to').order_by('-created_at')[:30]
 
         active_count = Request.objects.filter(
             client=request.user,
@@ -147,7 +147,7 @@ class ClientRequestDashboardView(ClientRequiredMixin, View):
         completed_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.DONE
-        ).order_by('-created_at')[:3]
+        ).select_related('assigned_to').order_by('-created_at')[:3]
 
         completed_count = Request.objects.filter(
             client=request.user,
@@ -157,7 +157,7 @@ class ClientRequestDashboardView(ClientRequiredMixin, View):
         canceled_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.CANCELED
-        ).order_by('-created_at')[:3]
+        ).select_related('assigned_to').order_by('-created_at')[:3]
 
         canceled_count = Request.objects.filter(
             client=request.user,

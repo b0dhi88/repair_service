@@ -11,43 +11,7 @@
     </div>
 </div>
 
-<div class="filter-tabs">
-    <a href="{% url 'master:active-requests' %}" class="filter-tab">Мои заявки</a>
-    <a href="{% url 'master:completed-requests' %}" class="filter-tab active">Завершенные</a>
-</div>
+{% include 'includes/filter_tabs.html' with tab_type='master' %}
 
-{% if requests %}
-    <div class="requests-grid">
-        {% for req in requests %}
-            <div class="request-card">
-                <div class="request-card-header">
-                    <span class="request-id">Заявка #{{ req.pk }}</span>
-                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
-                </div>
-                <div class="request-card-body">
-                    <div class="request-info">
-                        <span class="icon">📍</span>
-                        <span class="text">{{ req.address|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-info">
-                        <span class="icon">🔧</span>
-                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-info">
-                        <span class="icon">👤</span>
-                        <span class="text">{{ req.client_name }}</span>
-                    </div>
-                    <div class="request-meta">
-                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="empty-state">
-        <div class="empty-state-icon">✅</div>
-        <div class="empty-state-text">У вас нет завершенных заявок</div>
-    </div>
-{% endif %}
+{% include 'includes/request_list.html' with requests=requests role='master' empty_text='У вас нет завершенных заявок' %}
 {% endblock %}

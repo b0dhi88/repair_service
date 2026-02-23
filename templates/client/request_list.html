@@ -8,51 +8,7 @@
     </div>
 </div>
 
-<div class="filter-tabs">
-    <a href="{% url 'client:request-list' %}" class="filter-tab {% if request.path == '/client/requests/' %}active{% endif %}">Все</a>
-    <a href="{% url 'client:request-active' %}" class="filter-tab {% if 'active' in request.path %}active{% endif %}">Активные</a>
-    <a href="{% url 'client:request-completed' %}" class="filter-tab {% if 'completed' in request.path %}active{% endif %}">Завершенные</a>
-    <a href="{% url 'client:request-canceled' %}" class="filter-tab {% if 'canceled' in request.path %}active{% endif %}">Отмененные</a>
-</div>
+{% include 'includes/filter_tabs.html' with tab_type='client' %}
 
-{% if requests %}
-    <div class="requests-grid">
-        {% for req in requests %}
-            <div class="request-card">
-                <div class="request-card-header">
-                    <span class="request-id">Заявка #{{ req.pk }}</span>
-                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
-                </div>
-                <div class="request-card-body">
-                    <div class="request-info">
-                        <span class="icon">📍</span>
-                        <span class="text">{{ req.address|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-info">
-                        <span class="icon">🔧</span>
-                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-meta">
-                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
-                        {% if req.assigned_to %}
-                            <span>👤 {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="request-card-actions">
-                    <a href="{% url 'client:request-detail' req.pk %}" class="btn btn-outline btn-sm">Детали</a>
-                    {% if req.status == 'new' or req.status == 'assigned' %}
-                    <a href="{% url 'client:request-cancel' req.pk %}" class="btn btn-outline btn-sm btn-danger">Отменить</a>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
-        <div class="empty-state-text">Заявок пока нет</div>
-        <div class="empty-state-subtext">Создайте первую заявку, нажав кнопку выше</div>
-    </div>
-{% endif %}
+{% include 'includes/request_list.html' with requests=requests role='client' empty_text='Заявок пока нет' empty_subtext='Создайте первую заявку, нажав кнопку выше' %}
 {% endblock %}
