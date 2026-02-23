@@ -89,16 +89,6 @@ class RequestPermissions:
         return request_obj.status in [Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
     
     @staticmethod
-    def can_take_work(user: 'User', request_obj: Request) -> bool:
-        """Проверка права на взятие заявки в работу (мастер).
-        
-        Мастер может взять только новую заявку (статус NEW).
-        """
-        if not user.is_authenticated or not user.is_master:
-            return False
-        return request_obj.status == Request.Status.NEW
-    
-    @staticmethod
     def can_start_work(user: 'User', request_obj: Request) -> bool:
         """Проверка права на начало работы над заявкой (мастер).
         

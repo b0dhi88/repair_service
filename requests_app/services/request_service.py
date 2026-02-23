@@ -194,52 +194,6 @@ class RequestService:
         return request
     
     @transaction.atomic
-    def take_work(self, request_id: int, master: 'User') -> Request:
-        """Взятие заявки в работу (мастер).
-        
-        Мастер берет новую заявку (без назначения).
-        
-        Args:
-            request_id: ID заявки.
-            master: Мастер, берущий заявку.
-            
-        Returns:
-            Обновленная заявка.
-            
-        Raises:
-            RequestPermissionError: Если нет прав.
-            RequestValidationError: При ошибках валидации.
-            ConcurrentModificationError: При конфликте версий.
-        """
-        request = Request.objects.select_for_update().get(pk=request_id)
-        
-        if not self.permissions.can_take_work(master, request):
-            raise RequestPermissionError('Нельзя взять эту заявку в работу')
-        
-        self.validator.validate_assignment(master)
-        
-        updated = Request.objects.filter(
-            pk=request_id,
-            version=request.version
-        ).update(
-            assigned_to=master,
-            status=Request.Status.ASSIGNED,
-            version=models.F('version') + 1,
-            updated_at=timezone.now()
-        )
-        
-        if not updated:
-            raise ConcurrentModificationError(
-                'Заявка была изменена другим пользователем'
-            )
-        
-        request.refresh_from_db()
-        
-        audit_logger.log_taken(master, request)
-        
-        return request
-    
-    @transaction.atomic
     def start_work(self, request_id: int, master: 'User') -> Request:
         """Начало работы над заявкой (мастер).
         

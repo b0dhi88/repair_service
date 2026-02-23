@@ -5,7 +5,8 @@
     <h1 class="page-title">Мои заявки</h1>
     <div class="page-header-actions">
         <div class="stats-inline">
-            <span class="stat"><span class="stat-label">Активные:</span> <strong>{{ stats.active }}</strong></span>
+            <span class="stat"><span class="stat-label">В работе:</span> <strong>{{ stats.in_progress }}</strong></span>
+            <span class="stat"><span class="stat-label">Ожидающие:</span> <strong>{{ stats.assigned }}</strong></span>
             <span class="stat"><span class="stat-label">Завершенные:</span> <strong>{{ stats.completed }}</strong></span>
         </div>
     </div>
@@ -13,51 +14,81 @@
 
 <div class="filter-tabs">
     <a href="{% url 'master:active-requests' %}" class="filter-tab active">Мои заявки</a>
-    <a href="{% url 'master:available-requests' %}" class="filter-tab">Доступные</a>
     <a href="{% url 'master:completed-requests' %}" class="filter-tab">Завершенные</a>
 </div>
 
-{% if requests %}
-    <div class="requests-grid">
-        {% for req in requests %}
-            <div class="request-card">
-                <div class="request-card-header">
-                    <span class="request-id">Заявка #{{ req.pk }}</span>
-                    <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+{% if in_progress_requests %}
+<h2 class="section-title">В работе</h2>
+<div class="requests-grid">
+    {% for req in in_progress_requests %}
+        <div class="request-card">
+            <div class="request-card-header">
+                <span class="request-id">Заявка #{{ req.pk }}</span>
+                <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+            </div>
+            <div class="request-card-body">
+                <div class="request-info">
+                    <span class="icon">📍</span>
+                    <span class="text">{{ req.address|truncatechars:80 }}</span>
                 </div>
-                <div class="request-card-body">
-                    <div class="request-info">
-                        <span class="icon">📍</span>
-                        <span class="text">{{ req.address|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-info">
-                        <span class="icon">🔧</span>
-                        <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
-                    </div>
-                    <div class="request-info">
-                        <span class="icon">👤</span>
-                        <span class="text">{{ req.client_name }} ({{ req.client.phone }})</span>
-                    </div>
-                    <div class="request-meta">
-                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
-                    </div>
+                <div class="request-info">
+                    <span class="icon">🔧</span>
+                    <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
                 </div>
-                <div class="request-card-actions">
-                    {% if req.status == 'assigned' %}
-                        <a href="{% url 'master:request-start-work' req.pk %}" class="btn btn-primary btn-sm">Начать работу</a>
-                    {% elif req.status == 'in_progress' %}
-                        <a href="{% url 'master:request-complete' req.pk %}" class="btn btn-success btn-sm">Завершить</a>
-                    {% endif %}
+                <div class="request-info">
+                    <span class="icon">👤</span>
+                    <span class="text">{{ req.client_name }} ({{ req.client.phone }})</span>
+                </div>
+                <div class="request-meta">
+                    <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
                 </div>
             </div>
-        {% endfor %}
-    </div>
-{% else %}
+            <div class="request-card-actions">
+                <a href="{% url 'master:request-complete' req.pk %}" class="btn btn-success btn-sm">Завершить</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if assigned_requests %}
+<h2 class="section-title">Ожидающие</h2>
+<div class="requests-grid">
+    {% for req in assigned_requests %}
+        <div class="request-card">
+            <div class="request-card-header">
+                <span class="request-id">Заявка #{{ req.pk }}</span>
+                <span class="status-badge status-{{ req.status }}">{{ req.get_status_display }}</span>
+            </div>
+            <div class="request-card-body">
+                <div class="request-info">
+                    <span class="icon">📍</span>
+                    <span class="text">{{ req.address|truncatechars:80 }}</span>
+                </div>
+                <div class="request-info">
+                    <span class="icon">🔧</span>
+                    <span class="text">{{ req.problem_text|truncatechars:80 }}</span>
+                </div>
+                <div class="request-info">
+                    <span class="icon">👤</span>
+                    <span class="text">{{ req.client_name }} ({{ req.client.phone }})</span>
+                </div>
+                <div class="request-meta">
+                    <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+            </div>
+            <div class="request-card-actions">
+                <a href="{% url 'master:request-start-work' req.pk %}" class="btn btn-primary btn-sm">Начать работу</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if not requests %}
     <div class="empty-state">
         <div class="empty-state-icon">📋</div>
         <div class="empty-state-text">У вас нет активных заявок</div>
-        <div class="empty-state-subtext">Посмотрите доступные заявки</div>
-        <a href="{% url 'master:available-requests' %}" class="btn btn-primary" style="margin-top: 16px;">Доступные заявки</a>
     </div>
 {% endif %}
 {% endblock %}

@@ -18,35 +18,6 @@ class MasterRequiredMixin(UserPassesTestMixin):
         return self.request.user.is_authenticated and self.request.user.is_master
 
 
-class AvailableRequestListView(MasterRequiredMixin, ListView):
-    model = Request
-    template_name = 'master/available_requests.html'
-    context_object_name = 'requests'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Request.objects.filter(
-            status__in=[Request.Status.NEW, Request.Status.ASSIGNED]
-        ).exclude(assigned_to=self.request.user).order_by('-created_at')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['stats'] = self.get_stats()
-        return context
-
-    def get_stats(self):
-        return {
-            'active': Request.objects.filter(
-                assigned_to=self.request.user,
-                status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
-            ).count(),
-            'completed': Request.objects.filter(
-                assigned_to=self.request.user,
-                status=Request.Status.DONE
-            ).count(),
-        }
-
-
 class ActiveRequestListView(MasterRequiredMixin, ListView):
     model = Request
     template_name = 'master/active_requests.html'
@@ -54,22 +25,45 @@ class ActiveRequestListView(MasterRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Request.objects.filter(
+        in_progress = Request.objects.filter(
             assigned_to=self.request.user,
-            status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
+            status=Request.Status.IN_PROGRESS
         ).order_by('-created_at')
+        
+        assigned = Request.objects.filter(
+            assigned_to=self.request.user,
+            status=Request.Status.ASSIGNED
+        ).order_by('-created_at')
+        
+        return list(in_progress) + list(assigned)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['stats'] = self.get_stats()
+        
+        in_progress = [r for r in context['requests'] if str(r.status) == 'in_progress']
+        assigned = [r for r in context['requests'] if str(r.status) == 'assigned']
+        
+        context['in_progress_requests'] = in_progress
+        context['assigned_requests'] = assigned
+        
         return context
 
     def get_stats(self):
+        in_progress_count = Request.objects.filter(
+            assigned_to=self.request.user,
+            status=Request.Status.IN_PROGRESS
+        ).count()
+        
+        assigned_count = Request.objects.filter(
+            assigned_to=self.request.user,
+            status=Request.Status.ASSIGNED
+        ).count()
+        
         return {
-            'active': Request.objects.filter(
-                assigned_to=self.request.user,
-                status__in=[Request.Status.ASSIGNED, Request.Status.IN_PROGRESS]
-            ).count(),
+            'in_progress': in_progress_count,
+            'assigned': assigned_count,
+            'active': in_progress_count + assigned_count,
             'completed': Request.objects.filter(
                 assigned_to=self.request.user,
                 status=Request.Status.DONE
@@ -105,37 +99,6 @@ class CompletedRequestListView(MasterRequiredMixin, ListView):
                 status=Request.Status.DONE
             ).count(),
         }
-
-
-class RequestTakeView(MasterRequiredMixin, UpdateView):
-    model = Request
-    template_name = 'master/request_take.html'
-    fields = []
-    success_url = reverse_lazy('master:active-requests')
-
-    def get_queryset(self):
-        return Request.objects.filter(status=Request.Status.NEW)
-
-    def form_valid(self, form):
-        service = RequestService()
-        
-        try:
-            service.take_work(form.instance.pk, self.request.user)
-            messages.success(self.request, 'Заявка взята в работу')
-        except RequestPermissionError as e:
-            messages.error(self.request, str(e))
-            return self.form_invalid(form)
-        except RequestValidationError as e:
-            form.add_error(e.field or '__all__', str(e))
-            return self.form_invalid(form)
-        except ConcurrentModificationError:
-            messages.error(
-                self.request,
-                'Заявка была изменена другим пользователем. Обновите страницу.'
-            )
-            return self.form_invalid(form)
-        
-        return super().form_valid(form)
 
 
 class RequestStartWorkView(MasterRequiredMixin, UpdateView):
