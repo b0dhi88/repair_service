@@ -158,6 +158,17 @@ login "dispatcher1" "dispatcher123" "диспетчера"
 echo "11. Назначение мастера для заявки $REQUEST_ID..."
 ASSIGN_CSRF=$(get_csrf_token "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" "назначения мастера")
 
+# Get fresh CSRF after login redirect - required for Django CSRF
+curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$BASE_URL/dispatcher/requests/" -o /dev/null
+sleep 1
+ASSIGN_PAGE=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/")
+ASSIGN_CSRF=$(echo "$ASSIGN_PAGE" | grep -oP 'name="csrfmiddlewaretoken" value="\K[^"]+' | tail -1)
+
+if [ -z "$ASSIGN_CSRF" ]; then
+    ASSIGN_CSRF=$(get_csrf_token "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" "назначения мастера")
+fi
+
+# Use assigned_to field - if fails due to limit, script will exit
 ASSIGN_STATUS=$(curl -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" -X POST "$BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" \
     -H "Referer: $BASE_URL/dispatcher/requests/$REQUEST_ID/assign/" \
     -d "assigned_to=$MASTER_ID&csrfmiddlewaretoken=$ASSIGN_CSRF" \

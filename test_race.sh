@@ -51,28 +51,37 @@ login() {
         -D - -o /dev/null | grep -q "sessionid" && echo "Logged in as $username" || (echo "Login failed"; exit 1)
 }
 
-DISPATCHER_COOKIE="/tmp/repair_cookies_$SCRIPT_PID"
-
-echo "=== Step 1: Prepare request via create_request.sh ==="
-REQUEST_OUTPUT=$(bash /home/devler/dev/repair_service/create_request.sh "Race Test Address" "Race Test Problem" 2>&1)
-echo "$REQUEST_OUTPUT"
-
-REQUEST_ID=$(echo "$REQUEST_OUTPUT" | grep "ID заявки:" | grep -oP '\d+' | tail -1)
-MASTER_ID=$(echo "$REQUEST_OUTPUT" | grep "мастер с ID:" | grep -oP '\d+' | tail -1)
-
-if [ -z "$REQUEST_ID" ]; then
-    echo "Failed to get request ID from create_request.sh"
-    exit 1
-fi
-
+echo "=== Race Condition Test for 'Take Request to Work' ==="
 echo ""
-echo "Request ID for test: $REQUEST_ID"
-echo "Master ID assigned: $MASTER_ID"
 
-MASTER_USERNAME=$(curl -s "$BASE_URL/test/get_master_username/$MASTER_ID/" | grep -oP '"username":\s*"\K[^"]+' | head -1)
-if [ -z "$MASTER_USERNAME" ]; then
-    MASTER_USERNAME="master1"
+# Check if REQUEST_ID provided as argument, otherwise create one
+if [ -n "$1" ]; then
+    REQUEST_ID="$1"
+    echo "Using provided request ID: $REQUEST_ID"
+else
+    echo "Creating test request directly in database..."
+    REQUEST_OUTPUT=$(docker compose exec web python manage.py shell -c "
+from requests_app.models import Request, User
+client = User.objects.filter(role='client').first()
+master = User.objects.filter(role='master', id=6).first()
+r = Request.objects.create(
+    address='Race Test',
+    problem_text='Race condition test',
+    client=client,
+    assigned_to=master,
+    status='assigned'
+)
+print(r.id)
+")
+    REQUEST_ID=$(echo "$REQUEST_OUTPUT" | tail -1)
+    echo "Created request ID: $REQUEST_ID"
 fi
+
+echo "Request ID for test: $REQUEST_ID"
+echo ""
+
+echo "=== Step 1: Verify request is assigned to master ==="
+MASTER_USERNAME="master1"
 MASTER_PASSWORD="master123"
 
 echo ""
@@ -109,6 +118,8 @@ done
 
 echo ""
 echo "=== Final request status ==="
-login "$DISPATCHER_COOKIE" "dispatcher1" "dispatcher123" "dispatcher"
-FINAL_STATUS=$(curl -s -b "$DISPATCHER_COOKIE" "$BASE_URL/dispatcher/requests/$REQUEST_ID/" | grep -oP 'status.*?(\w+)' | head -1)
-echo "Request status: $FINAL_STATUS"
+docker compose exec web python manage.py shell -c "
+from requests_app.models import Request
+r = Request.objects.get(id=$REQUEST_ID)
+print(f'Request {$REQUEST_ID}: status={r.status}')
+"
