@@ -5,19 +5,22 @@
     <h1 class="page-title">Мои заявки</h1>
     <div class="page-header-actions">
         <div class="stats-inline">
-            <span class="stat"><span class="stat-label">Активные:</span> <strong>{{ active_requests.count }}</strong></span>
-            <span class="stat"><span class="stat-label">Завершенные:</span> <strong>{{ completed_requests.count }}</strong></span>
-            <span class="stat"><span class="stat-label">Отмененные:</span> <strong>{{ canceled_requests.count }}</strong></span>
+            <span class="stat"><span class="stat-label">Активные:</span> <strong>{{ active_count }}</strong></span>
+            <span class="stat"><span class="stat-label">Завершенные:</span> <strong>{{ completed_count }}</strong></span>
+            <span class="stat"><span class="stat-label">Отмененные:</span> <strong>{{ canceled_count }}</strong></span>
         </div>
         <a href="{% url 'client:request-create' %}" class="btn btn-primary">+ Новая заявка</a>
     </div>
 </div>
 
 {% if active_requests or completed_requests or canceled_requests %}
-{% if active_requests %}
-        <h2 style="margin-bottom: 16px; font-size: 18px;">Активные заявки</h2>
+    {% if active_requests %}
+        <h2 style="margin-bottom: 16px; font-size: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <span>Активные заявки{% if active_count > 9 %} <span style="color: #666; font-size: 14px;">(9/{{ active_count }})</span>{% endif %}</span>
+            {% if active_count > 9 %}<a href="{% url 'client:request-active' %}" class="btn btn-primary btn-sm">Все активные</a>{% endif %}
+        </h2>
         <div class="requests-grid" style="margin-bottom: 32px;">
-            {% for req in active_requests %}
+            {% for req in active_requests|slice:":9" %}
                 <div class="request-card">
                     <div class="request-card-header">
                         <span class="request-id">Заявка #{{ req.pk }}</span>
@@ -51,7 +54,10 @@
     {% endif %}
 
     {% if completed_requests %}
-        <h2 style="margin-bottom: 16px; font-size: 18px;">Завершенные заявки</h2>
+        <h2 style="margin-bottom: 16px; font-size: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <span>Завершенные заявки{% if completed_count > 3 %} <span style="color: #666; font-size: 14px;">(3/{{ completed_count }})</span>{% endif %}</span>
+            {% if completed_count > 3 %}<a href="{% url 'client:request-completed' %}" class="btn btn-primary btn-sm">Все завершенные</a>{% endif %}
+        </h2>
         <div class="requests-grid" style="margin-bottom: 32px;">
             {% for req in completed_requests|slice:":3" %}
                 <div class="request-card">
@@ -84,7 +90,10 @@
     {% endif %}
 
     {% if canceled_requests %}
-        <h2 style="margin-bottom: 16px; font-size: 18px;">Отмененные заявки</h2>
+        <h2 style="margin-bottom: 16px; font-size: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <span>Отмененные заявки{% if canceled_count > 3 %} <span style="color: #666; font-size: 14px;">(3/{{ canceled_count }})</span>{% endif %}</span>
+            {% if canceled_count > 3 %}<a href="{% url 'client:request-canceled' %}" class="btn btn-primary btn-sm">Все отмененные</a>{% endif %}
+        </h2>
         <div class="requests-grid">
             {% for req in canceled_requests|slice:":3" %}
                 <div class="request-card">

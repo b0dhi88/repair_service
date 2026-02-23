@@ -77,7 +77,7 @@ class CanceledRequestListView(ClientRequiredMixin, ListView):
 class RequestCreateView(ClientRequiredMixin, CreateView):
     form_class = RequestForm
     template_name = 'client/request_form.html'
-    success_url = reverse_lazy('client:request-active')
+    success_url = reverse_lazy('client:request-list')
 
     def form_valid(self, form):
         service = RequestService()
@@ -137,20 +137,38 @@ class ClientRequestDashboardView(ClientRequiredMixin, View):
         active_requests = Request.objects.filter(
             client=request.user,
             status__in=ACTIVE_STATUSES
-        ).order_by('-created_at')[:10]
+        ).order_by('-created_at')[:30]
+
+        active_count = Request.objects.filter(
+            client=request.user,
+            status__in=ACTIVE_STATUSES
+        ).count()
 
         completed_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.DONE
-        ).order_by('-created_at')[:10]
+        ).order_by('-created_at')[:3]
+
+        completed_count = Request.objects.filter(
+            client=request.user,
+            status=Request.Status.DONE
+        ).count()
 
         canceled_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.CANCELED
-        ).order_by('-created_at')[:10]
+        ).order_by('-created_at')[:3]
+
+        canceled_count = Request.objects.filter(
+            client=request.user,
+            status=Request.Status.CANCELED
+        ).count()
 
         return render(request, self.template_name, {
             'active_requests': active_requests,
+            'active_count': active_count,
             'completed_requests': completed_requests,
+            'completed_count': completed_count,
             'canceled_requests': canceled_requests,
+            'canceled_count': canceled_count,
         })
