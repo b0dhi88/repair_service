@@ -134,41 +134,38 @@ class ClientRequestDashboardView(ClientRequiredMixin, View):
     template_name = 'client/request_dashboard.html'
 
     def get(self, request):
+        from django.db.models import Case, When, Count, Q
+        
+        # Single query to get all counts with conditional aggregation
+        counts = Request.objects.filter(
+            client=request.user
+        ).aggregate(
+            active_count=Count(Case(When(status__in=ACTIVE_STATUSES, then=1))),
+            completed_count=Count(Case(When(status=Request.Status.DONE, then=1))),
+            canceled_count=Count(Case(When(status=Request.Status.CANCELED, then=1))),
+        )
+
+        # Fetch lists with select_related for optimization
         active_requests = Request.objects.filter(
             client=request.user,
             status__in=ACTIVE_STATUSES
         ).select_related('assigned_to').order_by('-created_at')[:30]
-
-        active_count = Request.objects.filter(
-            client=request.user,
-            status__in=ACTIVE_STATUSES
-        ).count()
 
         completed_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.DONE
         ).select_related('assigned_to').order_by('-created_at')[:3]
 
-        completed_count = Request.objects.filter(
-            client=request.user,
-            status=Request.Status.DONE
-        ).count()
-
         canceled_requests = Request.objects.filter(
             client=request.user,
             status=Request.Status.CANCELED
         ).select_related('assigned_to').order_by('-created_at')[:3]
 
-        canceled_count = Request.objects.filter(
-            client=request.user,
-            status=Request.Status.CANCELED
-        ).count()
-
         return render(request, self.template_name, {
             'active_requests': active_requests,
-            'active_count': active_count,
+            'active_count': counts['active_count'],
             'completed_requests': completed_requests,
-            'completed_count': completed_count,
+            'completed_count': counts['completed_count'],
             'canceled_requests': canceled_requests,
-            'canceled_count': canceled_count,
+            'canceled_count': counts['canceled_count'],
         })
