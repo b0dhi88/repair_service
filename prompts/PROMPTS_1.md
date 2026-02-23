@@ -322,3 +322,6 @@ Raised during:	requests_app.views.master.RequestStartWorkView
 [15:54]
 '| Средний | Оптимизировать ClientRequestDashboardView |
 | Средний | Вынести общий код ListView в базовые классы |'
+[16:23]
+'"Variable not allowed in type expression" в аргументах с типом User @requests_app/services/request_service.py 
+видимо там нужно передавать id?'

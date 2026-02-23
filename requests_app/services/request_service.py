@@ -1,11 +1,17 @@
 """Основной сервис для работы с заявками."""
 
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models, transaction
 from django.utils import timezone
 
-from ..models import Request, User
+from ..models import Request
+
+if TYPE_CHECKING:
+    from ..models import User
+
 from .audit import audit_logger, AuditAction
 from .exceptions import (
     RequestPermissionError,
@@ -16,11 +22,6 @@ from .exceptions import (
 )
 from .permissions import RequestPermissions
 from .validators import RequestValidator
-
-if TYPE_CHECKING:
-    from django.contrib.auth import get_user_model
-    
-    User = get_user_model()
 
 
 class RequestService:
