@@ -6,6 +6,7 @@
     <title>{% block title %}Repair Service{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/alpine.min.js' %}" defer></script>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -40,13 +41,38 @@
 
     <main class="main-content">
         {% if messages %}
-        <div class="messages">
-            {% for message in messages|slice:"-3:" %}
-            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">{{ message }}</div>
-            {% endfor %}
-            {% if messages|length > 3 %}
-            <div class="alert alert-info">Показаны последние 3 из {{ messages|length }} сообщений</div>
-            {% endif %}
+        {% with messages_list=messages|dictsort:"tags" %}
+        <script>
+            window.djangoMessages = [
+                {% for message in messages %}
+                {
+                    text: "{{ message }}",
+                    tags: "{{ message.tags|default:'info' }}",
+                    extra_classes: "{% if message.tags == 'error' %}error{% else %}{{ message.tags|default:'info' }}{% endif %}"
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+            window.djangoMessagesTotal = {{ messages|length }};
+        </script>
+        {% endwith %}
+        
+        <div x-data="messageQueue()" x-show="messages.length > 0" 
+             class="messages" style="display: none;">
+            
+            <template x-for="(msg, index) in messages" :key="index">
+                <div x-show="index >= messages.length - maxVisible"
+                     class="alert" 
+                     :class="'alert-' + msg.extra_classes">
+                    <span x-text="msg.text"></span>
+                    <button @click="closeMessage(index)" class="alert-close" 
+                            aria-label="Закрыть">&times;</button>
+                </div>
+            </template>
+            
+            <div x-show="messages.length > maxVisible" 
+                 class="alert alert-info">
+                Показаны последние <span x-text="maxVisible"></span> из <span x-text="messages.length"></span> сообщений
+            </div>
         </div>
         {% endif %}
         
@@ -54,5 +80,36 @@
     </main>
 
     {% block scripts %}{% endblock %}
+    <script>
+function messageQueue() {
+    return {
+        messages: window.djangoMessages || [],
+        maxVisible: 2,
+        timer: null,
+        
+        init() {
+            if (this.messages.length > 0) {
+                this.$el.style.display = 'block';
+                this.startTimer();
+            }
+        },
+        
+        startTimer() {
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.closeMessage(0);
+            }, 5000);
+        },
+        
+        closeMessage(index) {
+            clearTimeout(this.timer);
+            this.messages.splice(index, 1);
+            if (this.messages.length > 0) {
+                this.startTimer();
+            }
+        }
+    };
+}
+</script>
 </body>
 </html>

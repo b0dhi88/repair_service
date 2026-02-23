@@ -1,5 +1,6 @@
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout as auth_logout
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views import View
@@ -17,6 +18,33 @@ class RootView(LoginRequiredMixin, RedirectView):
         elif user.is_client:
             return '/client/requests/'
         return '/'
+
+
+class TestMessagesView(View):
+    """Тестовое представление для проверки очереди сообщений"""
+    
+    def get(self, request):
+        # Создаем 8 тестовых сообщений
+        test_messages = [
+            (messages.INFO, 'Это тестовое информационное сообщение №1'),
+            (messages.SUCCESS, 'Успешное действие выполнено! №2'),
+            (messages.WARNING, 'Внимание! Предупреждение №3'),
+            (messages.ERROR, 'Произошла ошибка №4'),
+            (messages.INFO, 'Информационное сообщение №5'),
+            (messages.SUCCESS, 'Данные сохранены успешно №6'),
+            (messages.WARNING, 'Срок действия истекает скоро №7'),
+            (messages.ERROR, 'Ошибка валидации данных №8'),
+        ]
+        
+        for level, msg in test_messages:
+            messages.add_message(request, level, msg)
+        
+        # Перенаправляем на главную страницу для авторизованных
+        # или на страницу входа для неавторизованных
+        if request.user.is_authenticated:
+            return redirect('/')
+        else:
+            return redirect('/login/')
 
 
 class RoleBasedLoginView(LoginView):
